@@ -2,6 +2,7 @@
   "name": "pangcg-components",
   "version": "0.0.1",
   "description": "A react library developed with dumi",
+  "homepage": "https://mr-pcg.github.io/pangcg-components", 
   "license": "MIT",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",

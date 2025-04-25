@@ -6,7 +6,7 @@ hero:
     - text: 快速开始
       link: /guide/getting-start
     - text: 在gitHub查看源码
-      link: /
+      link: / #https://github.com/Mr-Pcg/pangcg-components
 features:
   - emoji: 🚀
     title: 简单易用
