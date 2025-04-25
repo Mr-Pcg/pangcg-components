@@ -1,0 +1,28 @@
+{
+  "workbench.activityBar.orientation": "vertical",
+  "files.eol": "\n",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.tabSize": 2,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "vue",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+  "stylelint.validate": ["css", "scss", "less"],
+  "editor.formatOnSave": true, // 开启保存文件自动格式化代码
+  "prettier.requireConfig": true,
+  "path-intellisense.mappings": {
+    "@": "${workspaceRoot}/src"
+  },
+  "cSpell.words": ["Popconfirm"],
+  "Codegeex.CompletionDelay": 0.1
+}
