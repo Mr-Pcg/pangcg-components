@@ -103,6 +103,21 @@ const EditFormTableDemo = () => {
       },
     },
     {
+      title: '是否结婚',
+      dataIndex: 'isMarried',
+      key: 'isMarried',
+      width: 180,
+      componentType: 'switch',
+      componentProps: {
+        placeholder: '请选择是否结婚',
+        checkedChildren: '已婚',
+        unCheckedChildren: '未婚',
+      },
+      formItemProps: {
+        rules: [{ required: true, message: '请选择是否结婚' }],
+      },
+    },
+    {
       title: '操作',
       dataIndex: 'option',
       key: 'option',
@@ -171,6 +186,7 @@ const EditFormTableDemo = () => {
               age: 32,
               gender: 'male',
               address: '西湖区湖底公园1号',
+              isMarried: true,
             },
             {
               id: '11111',
@@ -178,6 +194,7 @@ const EditFormTableDemo = () => {
               age: 35,
               gender: 'female',
               address: '西湖区湖底公园1号',
+              isMarried: false,
             },
           ]}
           scroll={{ x: 'max-content' }}

@@ -8,7 +8,10 @@ import {
   InputNumber,
   Radio,
   Select,
+  Switch,
   Table,
+  TimePicker,
+  TreeSelect,
 } from 'antd';
 import React, { FC, useEffect } from 'react';
 
@@ -78,6 +81,12 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
         return <Checkbox {...(componentProps as ComponentProps<'checkbox'>)} />;
       case 'radio':
         return <Radio {...(componentProps as ComponentProps<'radio'>)} />;
+      case 'switch':
+        return <Switch {...(componentProps as ComponentProps<'switch'>)} />;
+      case 'timePicker':
+        return <TimePicker {...(componentProps as ComponentProps<'timePicker'>)} />;
+      case 'treeSelect':
+        return <TreeSelect {...(componentProps as ComponentProps<'treeSelect'>)} />;
       default:
         return null;
     }
@@ -127,9 +136,22 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
             if (componentType === 'text') {
               return curRecord?.[dataIndex]?.toString() || '';
             }
+
+            // 子节点的值的属性: 默认 value
+            const valuePropName = formItemProps?.valuePropName || (() => {
+              switch (componentType) {
+                case 'switch':
+                case 'checkbox':
+                  return 'checked';
+                default:
+                  return 'value';
+              }
+            })();
+
             return (
               <Form.Item
                 {...formItemProps}
+                valuePropName={valuePropName}
                 name={[inx, dataIndex]}
                 style={{ marginBottom: 0 }}
               >

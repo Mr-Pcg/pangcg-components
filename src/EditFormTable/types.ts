@@ -8,6 +8,9 @@ import type {
   RadioProps,
   SelectProps,
   TableProps,
+  SwitchProps,
+  TimePickerProps,
+  TreeSelectProps,
 } from 'antd';
 import type { RangePickerProps } from 'antd/lib/date-picker';
 import type { ColumnsType } from 'antd/lib/table';
@@ -72,6 +75,9 @@ export interface RecordCreatorProps {
  * inputNumber: 数字输入框
  * checkbox: 复选框
  * radio: 单选框
+ * switch: 开关
+ * timePicker: 时间选择器
+ * treeSelect: 树选择器
  */
 export type ComponentType =
   | 'text'
@@ -81,7 +87,10 @@ export type ComponentType =
   | 'rangePicker'
   | 'inputNumber'
   | 'checkbox'
-  | 'radio';
+  | 'radio'
+  | 'switch'
+  | 'timePicker'
+  | 'treeSelect';
 
 /**
  * 根据组件类型获取对应的Props类型
@@ -101,6 +110,12 @@ export type ComponentProps<T extends ComponentType> = T extends 'input'
   ? CheckboxProps
   : T extends 'radio'
   ? RadioProps
+  : T extends 'switch'
+  ? SwitchProps
+  : T extends 'timePicker'
+  ? TimePickerProps
+  : T extends 'treeSelect'
+  ? TreeSelectProps<any>
   : T extends 'text'
   ? Record<string, never>
   : never;
