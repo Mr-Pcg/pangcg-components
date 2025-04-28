@@ -3,8 +3,7 @@ import { defineConfig } from 'dumi';
 export default defineConfig({
   outputPath: 'docs-dist',
   base: process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/', // 生产环境使用 /pangcg -components/ 否则使用 /
-  // publicPath: 打包配置
-  publicPath: process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/', // 生产环境使用 /pangcg-components/ 否则使用 /
+  publicPath: process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/',
   themeConfig: {
     name: '组建库',
     nav: [
@@ -15,12 +14,12 @@ export default defineConfig({
       },
       {
         title: '组件',
-        link: 'components/edit-form-table', // components会默认自动对应到src文件夹
+        link: '/components/edit-form-table', // components会默认自动对应到src文件夹
         activePath: '/components',
       },
       {
-        title: 'API',
-        link: '/api',
+        title: '工具函数',
+        link: '/api/utils',
         activePath: '/api',
       },
     ],
@@ -38,25 +37,32 @@ export default defineConfig({
       ],
       '/components/': [
         {
-          title: 'Table表格',
-          children: [],
-        },
-        {
-          title: '异常处理',
-          children: [],
-        },
+          title: '组件',
+          children: [
+            {
+              title: 'Table表格',
+              link: '/components/edit-form-table',
+              children: [],
+            },
+            {
+              title: '异常处理',
+              link: '/components/error-boundary',
+              children: [],
+            },
+          ],
+        }
       ],
       '/api': [
         {
-          title: 'API 文档',
+          title: 'API文档',
           children: [
             {
-              title: '通用 API',
-              link: '/api/common',
+              title: '通用函数',
+              link: '/api/utils',
             },
             {
-              title: '组件 API',
-              link: '/api/components',
+              title: '高阶函数',
+              link: '/api/higher-order-function',
             },
           ],
         },
