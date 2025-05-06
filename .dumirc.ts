@@ -3,7 +3,8 @@ import { defineConfig } from 'dumi';
 export default defineConfig({
   outputPath: 'docs-dist',
   base: process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/', // 生产环境使用 /pangcg -components/ 否则使用 /
-  publicPath: process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/',
+  publicPath:
+    process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/',
   themeConfig: {
     name: '组建库',
     nav: [
@@ -49,8 +50,13 @@ export default defineConfig({
               link: '/components/error-boundary',
               children: [],
             },
+            {
+              title: '文件预览',
+              link: '/components/pdf-preview',
+              children: [],
+            },
           ],
-        }
+        },
       ],
       '/api': [
         {

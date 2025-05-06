@@ -5,14 +5,31 @@
 
 A react library developed with dumi
 
-## Usage
+## 安装
 
-TODO
+使用你喜欢的包管理器安装：
 
-## Options
+:::code-group
 
-TODO
+```bash [npm]
+npm install pangcg-components --save
+```
 
+```bash [cnpm]
+cnpm install pangcg-components --save
+```
+
+```bash [yarn]
+yarn add pangcg-components --save
+```
+
+```bash [pnpm]
+pnpm add pangcg-components --save
+```
+
+:::
+
+<!--
 ## Development
 
 ```bash
@@ -33,7 +50,7 @@ $ yarn run docs:build
 
 # check your project for potential problems
 $ yarn run doctor
-```
+``` -->
 
 ## LICENSE
 
