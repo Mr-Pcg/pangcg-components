@@ -19,9 +19,18 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 - 当你需要维护具有层级关系的数据，如组织架构、部门结构等
 - 当你需要在表单中展示和编辑复杂的层级数据
 
+## 注意事项
+
+1. 唯一性字段, 使用`_key`, 不可以丢失
+2. 为保证树形结构的正确性，内部会自动为每条数据添加`_key`属性, 默认赋值当前数据的`id`字段，不存在则生成随机数, 绑定到 Table 的`rowKey`
+
 ## 代码演示
 
 ### 基础用法
+
+<code src="./demo/baseEditFormTreeTable/index.tsx"></code>
+
+### useEditFormTreeTable 用法
 
 <code src="./demo/editFormTreeTable/index.tsx"></code>
 
@@ -29,13 +38,13 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 
 ### EditFormTreeTable
 
-| 参数               | 说明               | 类型                 | 默认值                         |
-| ------------------ | ------------------ | -------------------- | ------------------------------ |
-| formListProps      | Form.List 的属性   | `IFormListProps`     | -                              |
-| recordCreatorProps | 添加行的配置       | `RecordCreatorProps` | `{ creatorButtonShow: false }` |
-| columns            | 表格列的配置描述   | `EditColumnsType[]`  | -                              |
-| dataSource         | 数据数组           | `object[]`           | -                              |
-| childrenColumnName | 指定子节点的字段名 | `string`             | `children`                     |
+| 参数               | 说明                       | 类型                 | 默认值                         |
+| ------------------ | -------------------------- | -------------------- | ------------------------------ |
+| formListProps      | Form.List 的属性           | `IFormListProps`     | -                              |
+| recordCreatorProps | 添加行的配置               | `RecordCreatorProps` | `{ creatorButtonShow: false }` |
+| columns            | 表格列的配置描述           | `EditColumnsType[]`  | -                              |
+| dataSource         | 数据数组                   | `object[]`           | -                              |
+| otherProps         | 其余参数继承 antd 的 Table | -                    | -                              |
 
 ### IFormListProps
 
@@ -67,45 +76,29 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 
 ### ComponentType
 
-可用的编辑组件类型：
+| 参数        | 说明           | 类型               | 默认值 | 版本  |
+| ----------- | -------------- | ------------------ | ------ | ----- |
+| text        | 文本展示       | `string`           | `-`    | 0.0.1 |
+| input       | 文本输入框     | `InputProps`       | `-`    | 0.0.1 |
+| select      | 下拉选择框     | `SelectProps`      | `-`    | 0.0.1 |
+| datePicker  | 日期选择器     | `DatePickerProps`  | `-`    | 0.0.1 |
+| rangePicker | 日期范围选择器 | `RangePickerProps` | `-`    | 0.0.1 |
+| inputNumber | 数字输入框     | `InputNumberProps` | `-`    | 0.0.1 |
+| checkbox    | 复选框         | `CheckboxProps`    | `-`    | 0.0.1 |
+| radio       | 单选框         | `RadioProps`       | `-`    | 0.0.1 |
+| switch      | 开关           | `SwitchProps`      | `-`    | 0.0.1 |
+| timePicker  | 时间选择器     | `TimePickerProps`  | `-`    | 0.0.1 |
+| treeSelect  | 树选择器       | `TreeSelectProps`  | `-`    | 0.0.1 |
 
-- `text`: 纯文本展示
-- `input`: 输入框
-- `select`: 下拉选择框
-- `datePicker`: 日期选择器
-- `rangePicker`: 日期范围选择器
-- `inputNumber`: 数字输入框
-- `checkbox`: 复选框
-- `radio`: 单选框
-- `switch`: 开关
-- `timePicker`: 时间选择器
-- `treeSelect`: 树选择器
-
-### useEditFormTreeTable
+### useEditFormTreeTable 自定义 hooks
 
 提供操作树表格的工具方法，用于在表格外部进行操作。
 
-<!-- ```tsx
-import { useEditFormTreeTable } from 'pangcg-components';
-const { addChildRecord, deleteRecord } = useEditFormTreeTable();
-
-// 添加子节点
-addChildRecord('formFieldName', parentKey, newRecordData);
-
-// 删除节点及其所有子节点
-deleteRecord('formFieldName', keyToDelete);
-``` -->
-
 #### 方法说明
 
-| 方法名         | 说明                   | 参数                                                             |
-| -------------- | ---------------------- | ---------------------------------------------------------------- |
-| addChildRecord | 添加子节点             | `(formList: string, parentKey: string, record?: object) => void` |
-| deleteRecord   | 删除节点及其所有子节点 | `(formList: string, key: string) => void`                        |
-
-## 注意事项
-
-1. 组件内部会自动处理树形数据的扁平化，并在表单提交时维护正确的数据结构
-2. 第一列会自动添加缩进效果，用于展示数据的层级关系
-3. 删除节点时会连同其所有子节点一起删除
-4. 为保证树形结构的正确性，内部会自动为每条数据添加 `_key`、`_parentId` 和 `_level` 属性
+| 方法名         | 说明                   | 参数                                                                 |
+| -------------- | ---------------------- | -------------------------------------------------------------------- |
+| addRootRecord  | 添加根节点             | `(formListName: string, record?: object) => void`                    |
+| addChildRecord | 添加子节点             | `(formListName: string, parentKey: string, record?: object) => void` |
+| deleteRecord   | 删除节点及其所有子节点 | `(formListName: string, deleteKey: string) => void`                  |
+| updateRecord   | 更新节点数据           | `(formListName: string, updateKey: string, record: object) => void`  |

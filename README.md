@@ -9,48 +9,20 @@ A react library developed with dumi
 
 使用你喜欢的包管理器安装：
 
-:::code-group
-
-```bash [npm]
+```bash
+# 使用 npm
 npm install pangcg-components --save
-```
 
-```bash [cnpm]
+# 使用 cnpm
 cnpm install pangcg-components --save
-```
 
-```bash [yarn]
+# 使用 yarn
 yarn add pangcg-components --save
 ```
 
-```bash [pnpm]
-pnpm add pangcg-components --save
-```
+## 在线文档
 
-:::
-
-<!--
-## Development
-
-```bash
-# install dependencies
-$ yarn install
-
-# develop library by docs demo
-$ yarn start
-
-# build library source code
-$ yarn run build
-
-# build library source code in watch mode
-$ yarn run build:watch
-
-# build docs
-$ yarn run docs:build
-
-# check your project for potential problems
-$ yarn run doctor
-``` -->
+https://mr-pcg.github.io/pangcg-components
 
 ## LICENSE
 

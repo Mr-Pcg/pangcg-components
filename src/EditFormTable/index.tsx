@@ -84,9 +84,13 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
       case 'switch':
         return <Switch {...(componentProps as ComponentProps<'switch'>)} />;
       case 'timePicker':
-        return <TimePicker {...(componentProps as ComponentProps<'timePicker'>)} />;
+        return (
+          <TimePicker {...(componentProps as ComponentProps<'timePicker'>)} />
+        );
       case 'treeSelect':
-        return <TreeSelect {...(componentProps as ComponentProps<'treeSelect'>)} />;
+        return (
+          <TreeSelect {...(componentProps as ComponentProps<'treeSelect'>)} />
+        );
       default:
         return null;
     }
@@ -138,15 +142,17 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
             }
 
             // 子节点的值的属性: 默认 value
-            const valuePropName = formItemProps?.valuePropName || (() => {
-              switch (componentType) {
-                case 'switch':
-                case 'checkbox':
-                  return 'checked';
-                default:
-                  return 'value';
-              }
-            })();
+            const valuePropName =
+              formItemProps?.valuePropName ||
+              (() => {
+                switch (componentType) {
+                  case 'switch':
+                  case 'checkbox':
+                    return 'checked';
+                  default:
+                    return 'value';
+                }
+              })();
 
             return (
               <Form.Item
@@ -190,7 +196,6 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
                     const addItem = recordCreatorProps?.record
                       ? recordCreatorProps?.record()
                       : {};
-                    console.log('0000', addItem);
                     add({ ...addItem });
                   }}
                 >

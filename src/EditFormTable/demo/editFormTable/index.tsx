@@ -123,7 +123,7 @@ const EditFormTableDemo = () => {
       key: 'option',
       width: 120,
       fixed: 'right',
-      customRender: ({ text, record, index }, form_s: any) => {
+      customRender: ({ index }, form_s: any) => {
         return (
           <Space size="middle">
             <Popconfirm
@@ -132,7 +132,6 @@ const EditFormTableDemo = () => {
               cancelText="取消"
               onConfirm={() => {
                 const curList = form_s?.getFieldValue('list');
-                console.log('删除', text, record, index, curList);
                 form_s.setFieldValue(
                   'list',
                   curList.filter((items: any, inx: number) => inx !== index),

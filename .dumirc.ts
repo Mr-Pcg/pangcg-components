@@ -42,7 +42,7 @@ export default defineConfig({
           children: [
             {
               title: 'Table表格',
-              link: '/components/edit-form-table',
+              link: '/components/edit-form-table', // 默认：link
               children: [],
             },
             {

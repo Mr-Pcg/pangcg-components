@@ -4,6 +4,7 @@ import {
   Checkbox,
   DatePicker,
   Form,
+  FormInstance,
   Input,
   InputNumber,
   Radio,
@@ -13,17 +14,18 @@ import {
   TimePicker,
   TreeSelect,
 } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
-
-const { RangePicker } = DatePicker;
-
+import { cloneDeep } from 'lodash';
+import { generateUUID } from 'pangcg-components';
+import React, { FC, useCallback, useEffect } from 'react';
 // 内部类型定义
+import { StoreValue } from 'antd/es/form/interface';
 import type {
   ComponentProps,
   ComponentType,
   EditFormTreeTableProps,
-  TreeDataItem,
 } from './types';
+
+const { RangePicker } = DatePicker;
 
 /**
  * 可编辑树形表格
@@ -38,79 +40,35 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
     },
     columns,
     dataSource,
-    childrenColumnName = 'children',
     ...rest
   } = props;
 
   // 获取 form 实例
   const form = Form.useFormInstance();
 
-  // 维护树形数据映射关系
-  const [treeMapping, setTreeMapping] = useState<Record<string, TreeDataItem>>(
-    {},
-  );
-
-  // 使用useRef存储树操作函数，避免linter错误
-  // const treeOpsRef = useRef({
-  //   addChildRecord,
-  //   addRootRecord,
-  //   deleteRecord,
-  // });
-
-  // 将树形数据扁平化处理
-  const flattenTreeData = (
-    treeData: readonly any[],
-    parentId: string | null = null,
-    level = 0,
-  ): TreeDataItem[] => {
-    let result: TreeDataItem[] = [];
-    treeData.forEach((item, index) => {
-      // 为数据添加唯一键和层级信息
-      const flattenedItem: TreeDataItem = {
-        ...item,
-        _parentId: parentId,
-        _level: level,
-        _key: parentId ? `${parentId}-${index}` : `${index}`,
-      };
-
-      // 移除子项，但记录子项信息
-      const children = item[childrenColumnName];
-      delete flattenedItem[childrenColumnName];
-
-      result.push(flattenedItem);
-
-      // 递归处理子项
-      if (children && children.length > 0) {
-        const childrenItems = flattenTreeData(
-          children,
-          flattenedItem._key,
-          level + 1,
-        );
-        result = [...result, ...childrenItems];
-      }
-    });
-    return result;
-  };
-
   // 初始化设置：表格 数据
   useEffect(() => {
     if (formListProps.name && dataSource) {
-      // 处理树形数据
-      const flattened = flattenTreeData(dataSource);
-
-      // 创建树形映射关系
-      const mapping: Record<string, TreeDataItem> = {};
-      flattened.forEach((item) => {
-        if (item._key) {
-          mapping[item._key] = item;
-        }
-      });
-      setTreeMapping(mapping);
+      // 递归给数据源设置唯一标识 _key，绑定到 Table 的rowKey
+      const recursionDataSource = (dataList: any[]) => {
+        dataList.forEach((item) => {
+          item._key = item?.id || generateUUID();
+          if (Array.isArray(item?.children) && item?.children?.length) {
+            recursionDataSource(item.children);
+          } else {
+            item.children = null;
+          }
+        });
+      };
+      const cloneDataSource = Array.isArray(dataSource)
+        ? cloneDeep(dataSource)
+        : [];
+      recursionDataSource(cloneDataSource);
 
       // 设置表单数据
-      form.setFieldValue(formListProps.name, flattened);
+      form?.setFieldValue(formListProps.name, cloneDataSource || []);
     }
-  }, [dataSource, formListProps, childrenColumnName, form]);
+  }, [dataSource, formListProps]); // form
 
   /**
    * 根据不同 componentType 渲染不同的组件
@@ -159,26 +117,14 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
   };
 
   /**
-   * 自定义缩进单元格样式
-   * @param level 层级
-   * @param indentSize 缩进大小
-   * @returns
-   */
-  const getIndentStyle = (level: number, indentSize: number = 16) => {
-    return {
-      paddingLeft: level * indentSize + 'px',
-    };
-  };
-
-  /**
    * 设置：表格 列
    * 根据不同 componentType 渲染不同的组件
    */
   const customColumns = () => {
     // 获取可编辑表格的数据
-    const formListValues = form.getFieldValue(formListProps.name) || [];
+    // const formListValues = form.getFieldValue(formListProps.name) || [];
 
-    return columns.map((columnItem: any, colIndex: number) => {
+    return columns.map((columnItem: any) => {
       const {
         dataIndex,
         componentType = 'text',
@@ -190,124 +136,57 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
         ...columnItem,
         render: (text: string, record: any, inx: number) => {
           // 获取当前数据
-          const curRecord = formListValues?.[inx] || {};
+          const curRecord = cloneDeep({ ...record }); // formListValues?.[record.fieldKey] || {};
 
-          // 第一列添加缩进
-          if (colIndex === 0) {
-            const level = curRecord._level || 0;
-
-            // 自定义渲染：customRender
-            if (columnItem?.customRender instanceof Function) {
-              const customContent = columnItem.customRender(
-                {
-                  text: curRecord?.[dataIndex] || undefined,
-                  record: curRecord,
-                  index: inx,
-                },
-                form,
-              );
-
-              return <div style={getIndentStyle(level)}>{customContent}</div>;
-            } else if (columnItem?.render instanceof Function) {
-              // 渲染render
-              const renderedContent = columnItem.render(
-                curRecord?.[dataIndex] || '',
-                curRecord,
-                inx,
-              );
-
-              return <div style={getIndentStyle(level)}>{renderedContent}</div>;
-            } else {
-              // 根据 componentType 渲染
-              if (componentType === 'text') {
-                return (
-                  <div style={getIndentStyle(level)}>
-                    {curRecord?.[dataIndex]?.toString() || ''}
-                  </div>
-                );
-              }
-
-              // 子节点的值的属性: 默认 value
-              const valuePropName =
-                formItemProps?.valuePropName ||
-                (() => {
-                  switch (componentType) {
-                    case 'switch':
-                    case 'checkbox':
-                      return 'checked';
-                    default:
-                      return 'value';
-                  }
-                })();
-
-              return (
-                <div style={getIndentStyle(level)}>
-                  <Form.Item
-                    {...formItemProps}
-                    valuePropName={valuePropName}
-                    name={[inx, dataIndex]}
-                    style={{ marginBottom: 0 }}
-                  >
-                    {renderComponent(
-                      componentType,
-                      componentProps as ComponentProps<ComponentType>,
-                    )}
-                  </Form.Item>
-                </div>
-              );
-            }
+          // 自定义渲染：customRender
+          if (columnItem?.customRender instanceof Function) {
+            return columnItem.customRender(
+              {
+                text: curRecord?.[dataIndex] || undefined,
+                record: curRecord,
+                index: inx,
+              },
+              form,
+            );
+          } else if (columnItem?.render instanceof Function) {
+            // 渲染render
+            return columnItem.render(
+              curRecord?.[dataIndex] || '',
+              curRecord,
+              inx,
+            );
           } else {
-            // 其他列正常渲染
-            // 自定义渲染：customRender
-            if (columnItem?.customRender instanceof Function) {
-              return columnItem.customRender(
-                {
-                  text: curRecord?.[dataIndex] || undefined,
-                  record: curRecord,
-                  index: inx,
-                },
-                form,
-              );
-            } else if (columnItem?.render instanceof Function) {
-              // 渲染render
-              return columnItem.render(
-                curRecord?.[dataIndex] || '',
-                curRecord,
-                inx,
-              );
-            } else {
-              // 根据 componentType 渲染
-              if (componentType === 'text') {
-                return curRecord?.[dataIndex]?.toString() || '';
-              }
-
-              // 子节点的值的属性: 默认 value
-              const valuePropName =
-                formItemProps?.valuePropName ||
-                (() => {
-                  switch (componentType) {
-                    case 'switch':
-                    case 'checkbox':
-                      return 'checked';
-                    default:
-                      return 'value';
-                  }
-                })();
-
-              return (
-                <Form.Item
-                  {...formItemProps}
-                  valuePropName={valuePropName}
-                  name={[inx, dataIndex]}
-                  style={{ marginBottom: 0 }}
-                >
-                  {renderComponent(
-                    componentType,
-                    componentProps as ComponentProps<ComponentType>,
-                  )}
-                </Form.Item>
-              );
+            // 根据 componentType 渲染
+            if (componentType === 'text') {
+              return curRecord?.[dataIndex]?.toString() || '';
             }
+
+            // 子节点的值的属性: 默认 value
+            const valuePropName =
+              formItemProps?.valuePropName ||
+              (() => {
+                switch (componentType) {
+                  case 'switch':
+                  case 'checkbox':
+                    return 'checked';
+                  default:
+                    return 'value';
+                }
+              })();
+
+            return (
+              <Form.Item
+                {...formItemProps}
+                valuePropName={valuePropName}
+                name={[...record.fieldKey!, dataIndex]}
+                style={{ marginBottom: 0 }}
+              >
+                {renderComponent(
+                  componentType,
+                  componentProps as ComponentProps<ComponentType>,
+                )}
+              </Form.Item>
+            );
           }
         },
       };
@@ -315,135 +194,67 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
   };
 
   /**
-   * 添加子节点逻辑
+   * 添加根数据
+   * @param add 添加数据的方法
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleAddChildRecord = (parentKey: string) => {
-    const formListValues = form.getFieldValue(formListProps.name) || [];
-
-    // 找到父节点的索引
-    const parentIndex = formListValues.findIndex(
-      (item: any) => item._key === parentKey,
-    );
-    if (parentIndex === -1) return;
-
-    // 找到同级最后一个元素的索引
-    let lastChildIndex = parentIndex;
-    for (let i = 0; i < formListValues.length; i++) {
-      const item = formListValues[i];
-      if (item._parentId === parentKey) {
-        lastChildIndex = i;
-      }
-    }
-
-    // 创建新记录
-    const newRecord = recordCreatorProps?.record
-      ? recordCreatorProps.record()
+  const handleAddRootRecord = (
+    add: (defaultValue?: StoreValue, insertIndex?: number) => void,
+  ) => {
+    const creatorProps_record = recordCreatorProps?.record
+      ? recordCreatorProps?.record()
       : {};
-    const parentLevel = formListValues[parentIndex]._level || 0;
-    const newKey = `${parentKey}-${Date.now()}`;
-
-    const newItem = {
-      ...newRecord,
-      _parentId: parentKey,
-      _level: parentLevel + 1,
-      _key: newKey,
-    };
-
-    // 在最后一个子元素后插入新元素
-    const newFormListValues = [
-      ...formListValues.slice(0, lastChildIndex + 1),
-      newItem,
-      ...formListValues.slice(lastChildIndex + 1),
-    ];
-
-    form.setFieldValue(formListProps.name, newFormListValues);
-
-    // 更新映射
-    setTreeMapping((prev) => ({
-      ...prev,
-      [newKey]: newItem,
-    }));
-  };
-
-  /**
-   * 添加根节点
-   */
-  const handleAddRootRecord = () => {
-    const formListValues = form.getFieldValue(formListProps.name) || [];
-
-    // 创建新记录
     const newRecord = recordCreatorProps?.record
-      ? recordCreatorProps.record()
-      : {};
-    const newKey = `root-${Date.now()}`;
-
-    const newItem = {
-      ...newRecord,
-      _parentId: null,
-      _level: 0,
-      _key: newKey,
-    };
-
-    // 添加到列表末尾
-    const newFormListValues = [...formListValues, newItem];
-
-    form.setFieldValue(formListProps.name, newFormListValues);
-
-    // 更新映射
-    setTreeMapping((prev) => ({
-      ...prev,
-      [newKey]: newItem,
-    }));
-  };
-
-  /**
-   * 删除记录及其所有子记录逻辑
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDeleteRecord = (key: string) => {
-    const formListValues = form.getFieldValue(formListProps.name) || [];
-
-    // 递归找出所有需要删除的key
-    const keysToDelete = new Set<string>();
-
-    const findChildren = (parentKey: string) => {
-      keysToDelete.add(parentKey);
-      formListValues.forEach((item: any) => {
-        if (item._parentId === parentKey) {
-          findChildren(item._key);
+      ? {
+          ...creatorProps_record,
+          children:
+            Array.isArray(creatorProps_record?.children) &&
+            creatorProps_record?.children?.length
+              ? creatorProps_record.children
+              : null,
+          _key: creatorProps_record?.id || generateUUID(),
         }
-      });
-    };
+      : { _key: generateUUID(), children: null };
 
-    findChildren(key);
-
-    // 过滤掉需要删除的记录
-    const newFormListValues = formListValues.filter(
-      (item: any) => !keysToDelete.has(item._key),
-    );
-
-    form.setFieldValue(formListProps.name, newFormListValues);
-
-    // 更新映射
-    const newMapping = { ...treeMapping };
-    keysToDelete.forEach((keyToDelete) => {
-      delete newMapping[keyToDelete];
-    });
-    setTreeMapping(newMapping);
+    add({ ...newRecord });
   };
+
+  // 树形可编辑表格
+  const transformData = useCallback(
+    (data: any[], parentKey: (string | number)[] = []): any[] => {
+      return data?.map((field, index) => {
+        const fieldKey = [...parentKey, index];
+        const currentData = form.getFieldValue([
+          formListProps.name,
+          ...fieldKey,
+        ]);
+
+        return {
+          ...currentData,
+          fieldKey,
+          isListField: true,
+          children: currentData?.children
+            ? transformData(Array(currentData.children.length).fill({}), [
+                ...fieldKey,
+                'children',
+              ])
+            : undefined,
+        };
+      });
+    },
+    [form, formListProps.name],
+  );
 
   return (
     <Form.List {...(formListProps || {})}>
-      {(fields) => {
+      {(fields, { add }) => {
         return (
           <>
             <Table
               {...(rest || {})}
+              dataSource={transformData(fields)} // 数据源
               columns={customColumns()}
-              dataSource={fields} // 数据源
+              rowKey={(record) => record._key} // 使用_key作为行唯一标识
               pagination={false} // 可编辑表格，不允许分页
-              rowKey={(record) => record._key || record.name} // 使用_key作为行唯一标识
             />
             {/* 添加根节点 */}
             {recordCreatorProps?.creatorButtonShow ? (
@@ -453,9 +264,9 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
                     type: 'dashed',
                     block: true,
                   })}
-                  onClick={handleAddRootRecord}
+                  onClick={() => handleAddRootRecord(add)}
                 >
-                  {recordCreatorProps?.creatorButtonText || '添加根节点'}
+                  {recordCreatorProps?.creatorButtonText || '添加一行'}
                 </Button>
               </div>
             ) : null}
@@ -469,107 +280,138 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
 // 导出组件和方法
 export default EditFormTreeTable;
 
-// 导出添加子节点和删除节点方法
-export const useEditFormTreeTable = (formInstance?: any) => {
-  const contextForm = Form.useFormInstance();
-  const form = formInstance || contextForm;
-
-  if (!form) {
-    console.error(
-      'useEditFormTreeTable: Form instance is required. Either use this hook within Form context or provide a form instance.',
-    );
-
-    // 返回无操作函数，防止调用时出错
-    return {
-      addChildRecord: () => {
-        console.warn('Form instance is missing, operation not performed');
-      },
-      deleteRecord: () => {
-        console.warn('Form instance is missing, operation not performed');
-      },
-    };
-  }
+/**
+ * 可编辑树形表格 自定义 hook
+ * 提供操作树表格的工具方法，用于在表格外部进行操作
+ * @param formInstance
+ * @returns
+ */
+export const useEditFormTreeTable = (formInstance: FormInstance) => {
+  // 获取 form 实例
+  const form = formInstance;
 
   /**
-   * 添加子节点
-   * @param formList 表单数组名称
-   * @param parentKey 父节点Key
-   * @param record 新记录数据
+   * 添加根数据
+   * @param formListName 表单列表名称
+   * @param record 添加的数据
    */
-  const addChildRecord = (
-    formList: string,
-    parentKey: string,
-    record: Record<string, any> = {},
-  ) => {
-    const formListValues = form.getFieldValue(formList) || [];
-
-    // 找到父节点的索引
-    const parentIndex = formListValues.findIndex(
-      (item: any) => item._key === parentKey,
-    );
-    if (parentIndex === -1) return;
-
-    // 找到同级最后一个元素的索引
-    let lastChildIndex = parentIndex;
-    for (let i = 0; i < formListValues.length; i++) {
-      const item = formListValues[i];
-      if (item._parentId === parentKey) {
-        lastChildIndex = i;
-      }
-    }
-
-    const parentLevel = formListValues[parentIndex]._level || 0;
-    const newKey = `${parentKey}-${Date.now()}`;
-
-    const newItem = {
-      ...record,
-      _parentId: parentKey,
-      _level: parentLevel + 1,
-      _key: newKey,
-    };
-
-    // 在最后一个子元素后插入新元素
-    const newFormListValues = [
-      ...formListValues.slice(0, lastChildIndex + 1),
-      newItem,
-      ...formListValues.slice(lastChildIndex + 1),
-    ];
-
-    form.setFieldValue(formList, newFormListValues);
+  const addRootRecord = (formListName: string, record?: object) => {
+    // 获取当前表单列表的值
+    const formListValues = form?.getFieldValue(formListName) || [];
+    formListValues.push({ ...(record || {}), _key: generateUUID() });
+    form.setFieldValue(formListName, formListValues);
   };
 
   /**
-   * 删除记录及其子记录
-   * @param formList 表单数组名称
-   * @param key 要删除的记录key
+   * 添加子数据
+   * @param formListName 表单列表名称
+   * @param parentKey 父级key
+   * @param record 添加的数据
    */
-  const deleteRecord = (formList: string, key: string) => {
-    const formListValues = form.getFieldValue(formList) || [];
+  const addChildRecord = (
+    formListName: string,
+    parentKey: string,
+    record?: any,
+  ) => {
+    // 获取当前表单列表的值
+    const formListValues = form?.getFieldValue(formListName) || [];
 
-    // 递归找出所有需要删除的key
-    const keysToDelete = new Set<string>();
-
-    const findChildren = (parentKey: string) => {
-      keysToDelete.add(parentKey);
-      formListValues.forEach((item: any) => {
-        if (item._parentId === parentKey) {
-          findChildren(item._key);
+    // 递归找到当前需要添加子数据的数据
+    const addChildToNode = (nodes: any[]): any[] => {
+      return nodes.map((node) => {
+        if (parentKey?.toString() === node?._key?.toString()) {
+          return {
+            ...node,
+            children: [
+              ...(node?.children || []),
+              { ...(record || {}), _key: generateUUID() },
+            ],
+          };
         }
+        if (Array.isArray(node?.children) && node?.children?.length) {
+          return {
+            ...node,
+            children: addChildToNode(node.children),
+          };
+        }
+        return node;
       });
     };
+    const newData = addChildToNode(formListValues);
 
-    findChildren(key);
+    // 设置数据
+    form.setFieldValue(formListName, newData);
+  };
 
-    // 过滤掉需要删除的记录
-    const newFormListValues = formListValues.filter(
-      (item: any) => !keysToDelete.has(item._key),
-    );
+  /**
+   * 删除根数据及其子数据 || 删除子数据
+   * @param formListName 表单列表名称
+   * @param key 数据key
+   */
+  const deleteRecord = (formListName: string, deleteKey: string) => {
+    // 获取当前表单列表的值
+    const formListValues = form?.getFieldValue(formListName) || [];
 
-    form.setFieldValue(formList, newFormListValues);
+    // 递归找到需要删除的数据，找到将数据删除
+    const removeNode = (nodes: any[]): any[] => {
+      return nodes.filter((node) => {
+        if (node._key?.toString() === deleteKey?.toString()) {
+          return false;
+        }
+        if (Array.isArray(node?.children) && node?.children?.length) {
+          node.children = removeNode(node.children);
+        }
+        return true;
+      });
+    };
+    const newData = removeNode(formListValues);
+
+    // 设置数据
+    form.setFieldValue(formListName, newData);
+  };
+
+  /**
+   * 更新数据
+   * @param formListName 表单列表名称
+   * @param updateKey 更新数据key
+   * @param record 更新数据
+   */
+  const updateRecord = (
+    formListName: string,
+    updateKey: string,
+    record: any,
+  ) => {
+    // 获取当前表单列表的值
+    const formListValues = form?.getFieldValue(formListName) || [];
+
+    // 递归找到需要更新的数据，找到将数据更新
+    const updateNode = (nodes: any[]): any[] => {
+      return nodes.map((node) => {
+        if (updateKey?.toString() === node?._key?.toString()) {
+          return {
+            ...node,
+            ...{
+              ...record,
+              _key: node?._key?.toString() || generateUUID(),
+            },
+          };
+        }
+        if (Array.isArray(node?.children) && node?.children?.length) {
+          node.children = updateNode(node.children);
+        }
+        return node;
+      });
+    };
+    const newData = updateNode(formListValues);
+
+    // 设置数据
+    form.setFieldValue(formListName, newData);
   };
 
   return {
+    addRootRecord,
     addChildRecord,
     deleteRecord,
+    updateRecord,
   };
 };

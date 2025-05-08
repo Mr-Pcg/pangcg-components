@@ -21,8 +21,7 @@ interface DepartmentInfo {
 
 const EditFormTreeTableDemo = () => {
   const [form] = Form.useForm();
-  const { addRootRecord, addChildRecord, deleteRecord, updateRecord } =
-    useEditFormTreeTable(form);
+  const { addChildRecord, deleteRecord } = useEditFormTreeTable(form);
 
   // 定义列配置
   const columns: EditTreeColumnsType<DepartmentInfo> = [
@@ -122,7 +121,7 @@ const EditFormTreeTableDemo = () => {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
-      width: 240,
+      width: 180,
       fixed: 'right',
       customRender: ({ record }) => {
         return (
@@ -149,19 +148,6 @@ const EditFormTreeTableDemo = () => {
               }}
             >
               <a>删除</a>
-            </Popconfirm>
-            <Popconfirm
-              title="确定要更新这个部门名称吗？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => {
-                updateRecord('departments', record._key, {
-                  ...record,
-                  name: '更新后的部门名称',
-                });
-              }}
-            >
-              <a>更新名称</a>
             </Popconfirm>
           </Space>
         );
@@ -238,24 +224,23 @@ const EditFormTreeTableDemo = () => {
       >
         提交数据
       </Button>
-      <Button
-        type="primary"
-        onClick={() => {
-          addRootRecord('departments', {
-            name: '新部门',
-            manager: '未指定',
-            level: 1,
-            status: true,
-          });
-        }}
-        style={{ marginBottom: 12, marginLeft: 12 }}
-      >
-        外部添加根数据
-      </Button>
       <Form form={form} onFinish={onFinish}>
         <EditFormTreeTable
           key="tree-table"
           formListProps={{ name: 'departments' }}
+          recordCreatorProps={{
+            creatorButtonShow: true,
+            creatorButtonText: '添加根数据',
+            record: () => {
+              return {
+                id: '',
+                name: '新部门',
+                manager: '未指定',
+                level: 1,
+                status: true,
+              };
+            },
+          }}
           columns={columns}
           dataSource={treeData}
           scroll={{ x: 'max-content' }}

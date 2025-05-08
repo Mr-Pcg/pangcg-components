@@ -151,10 +151,10 @@ export interface EditTableProps<T = any>
 }
 
 /**
- * 可编辑表单表格组件属性接口
- * 结合了可编辑表格和表单功能
+ * 可编辑树形表格组件属性接口
+ * 扩展了可编辑表单表格，增加树形数据支持
  */
-export interface EditFormTableProps<T = any> extends EditTableProps<T> {
+export interface EditFormTreeTableProps<T = any> extends EditTableProps<T> {
   /**
    * Form.List组件的属性配置
    */
@@ -164,27 +164,4 @@ export interface EditFormTableProps<T = any> extends EditTableProps<T> {
    * 创建行数据的配置
    */
   recordCreatorProps?: RecordCreatorProps;
-}
-
-/**
- * 树形表格项数据接口
- */
-export interface TreeDataItem {
-  key?: string;
-  _key?: string;
-  _level?: number;
-  _parentId?: string | null;
-  [key: string]: any;
-}
-
-/**
- * 可编辑树形表格组件属性接口
- * 扩展了可编辑表单表格，增加树形数据支持
- */
-export interface EditFormTreeTableProps<T = any> extends EditFormTableProps<T> {
-  /**
-   * 指定子节点的字段名
-   * @default 'children'
-   */
-  childrenColumnName?: string;
 }
