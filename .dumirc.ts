@@ -1,7 +1,7 @@
 import { defineConfig } from 'dumi';
 
 export default defineConfig({
-  outputPath: 'docs-dist',
+  outputPath: 'docs-dist', // 文档输出路经
   base: process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/', // 生产环境使用 /pangcg -components/ 否则使用 /
   publicPath:
     process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/',
