@@ -63,7 +63,7 @@ const EditFormTableDemo = () => {
       title: '年龄',
       dataIndex: 'age',
       key: 'age',
-      width: 200,
+      width: 80,
       render: (value) => {
         return <div style={{ color: 'red' }}>{value || ''}</div>;
       },

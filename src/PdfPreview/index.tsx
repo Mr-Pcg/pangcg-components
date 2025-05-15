@@ -88,7 +88,6 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
         setPdfFile(fileUrl);
       } else if (isBlobObject(fileUrl) || isFileObject(fileUrl)) {
         // 处理文件流 (Blob 或 File 对象)
-
         setPdfFile(fileUrl);
         // 如果是File对象，使用其名称
         file_name =
@@ -143,11 +142,14 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
   // 下一页 事件
   const nextPage = () => changePage(1);
 
-  // 放大
-  const zoomIn = () => setScale((prevScale) => Math.min(prevScale + 0.2, 3));
-
-  // 缩小
-  const zoomOut = () => setScale((prevScale) => Math.max(prevScale - 0.2, 0.5));
+  // pdf：放大
+  const zoomIn = () => {
+    setScale(scale * 1.2);
+  };
+  // pdf：缩小
+  const zoomOut = () => {
+    setScale(scale / 1.2);
+  };
 
   // 下载
   const downloadFile = () => {
@@ -228,6 +230,7 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
             disabled={pageNumber >= (numPages || 1)}
           />
           <Button icon={<ZoomOutOutlined />} onClick={zoomOut} />
+          <span>{`${Math.round(scale * 100)}%`}</span>
           <Button icon={<ZoomInOutlined />} onClick={zoomIn} />
           <Button icon={<DownloadOutlined />} onClick={downloadFile}>
             下载

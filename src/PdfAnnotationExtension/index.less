@@ -1,0 +1,510 @@
+.pdf-annotation-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  background-color: #f0f2f5;
+  overflow: hidden;
+}
+
+.pdf-annotation-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 2;
+}
+
+/* 工具栏行样式 */
+.pdf-annotation-toolbar-row {
+  padding: 0 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.pdf-annotation-filename {
+  font-weight: bold;
+  margin-right: 20px;
+  flex-shrink: 0;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pdf-annotation-actions {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+
+  > * {
+    margin: 0 4px;
+  }
+
+  .pdf-annotation-actions-sidebar,
+  .pdf-annotation-actions-zoom,
+  .pdf-annotation-actions-page {
+    display: flex;
+    align-items: center;
+  }
+
+  .pdf-annotation-actions-zoom {
+    margin-right: 24px;
+  }
+
+  .pdf-annotation-actions-save {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+}
+
+.pdf-annotation-content {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.pdf-annotation-main {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background-color: #525659;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+
+  .pdf-viewer {
+    position: relative;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+
+    /* 文本选择提示框 */
+    .text-selection-hint {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      padding: 10px 15px;
+      z-index: 100;
+      max-width: 90%;
+      pointer-events: none;
+      animation: fadeIn 0.3s ease-in-out;
+      border: 1px solid #e8e8e8;
+
+      .hint-content {
+        display: flex;
+        align-items: center;
+      }
+
+      .hint-icon {
+        font-size: 20px;
+        margin-right: 10px;
+      }
+
+      .hint-text {
+        font-size: 14px;
+        color: #333;
+      }
+    }
+
+    /* 确保批注图层位于正确位置 */
+    .react-pdf__Page {
+      position: relative;
+      z-index: 1;
+
+      .react-pdf__Page__textContent {
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        -moz-user-select: text !important;
+        -ms-user-select: text !important;
+        cursor: text !important;
+      }
+
+      span,
+      p,
+      div {
+        cursor: text !important;
+      }
+    }
+
+    /* 确保高亮、下划线和删除线样式能够正确应用 */
+    .web-highlighter-wrapper {
+      position: absolute !important;
+      top: 0;
+      left: 0;
+      pointer-events: none !important;
+      z-index: 3 !important;
+
+      /* 确保wrapper内部的元素可以接收样式 */
+      * {
+        pointer-events: none !important;
+      }
+    }
+
+    .web-highlighter-selection {
+      background-color: rgba(255, 255, 0, 0.3) !important;
+      mix-blend-mode: multiply !important;
+      pointer-events: auto !important;
+      z-index: 3 !important;
+      position: relative !important;
+      border-radius: 2px !important;
+      display: inline !important;
+      overflow: hidden !important;
+      white-space: nowrap !important;
+      max-width: fit-content !important;
+    }
+
+    /* 删除线和下划线样式 */
+    .web-highlighter-selection[style*='text-decoration: line-through'] {
+      text-decoration: line-through !important;
+      text-decoration-thickness: 2px !important;
+      text-decoration-color: inherit !important;
+      background-color: transparent !important;
+    }
+
+    .web-highlighter-selection[style*='text-decoration: underline'] {
+      text-decoration: underline !important;
+      text-decoration-thickness: 2px !important;
+      text-decoration-color: inherit !important;
+      background-color: transparent !important;
+    }
+
+    /* 文本批注样式 - 使用!important确保样式优先级 */
+    .pdf-text-highlight {
+      background-color: inherit !important;
+      mix-blend-mode: multiply !important;
+      opacity: 0.3 !important;
+      overflow: hidden !important;
+      max-width: fit-content !important;
+    }
+
+    .pdf-text-strikethrough {
+      text-decoration: line-through !important;
+      text-decoration-thickness: 2px !important;
+      background-color: transparent !important;
+      overflow: hidden !important;
+      max-width: fit-content !important;
+    }
+
+    .pdf-text-underline {
+      text-decoration: underline !important;
+      text-decoration-thickness: 2px !important;
+      background-color: transparent !important;
+      overflow: hidden !important;
+      max-width: fit-content !important;
+    }
+
+    /* 自定义高亮样式 - 防止重影 */
+    .custom-pdf-highlight {
+      position: absolute !important;
+      z-index: 3 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+    }
+
+    /* 批注高亮标记 */
+    [data-highlight-id] {
+      position: absolute;
+      pointer-events: none;
+      z-index: 3;
+      border-radius: 2px;
+    }
+
+    /* Konva Stage (批注图层)应该位于PDF上方但不阻止交互 */
+    .konvajs-content {
+      position: absolute !important;
+      top: 0;
+      left: 0;
+      z-index: 4;
+      pointer-events: all;
+    }
+
+    /* 文本选择捕获层样式 */
+    .text-selection-layer {
+      background-color: transparent;
+      cursor: text;
+      user-select: text;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+    }
+
+    /* 批注层样式 */
+    .annotation-layer {
+      user-select: text;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+    }
+  }
+}
+
+.pdf-annotation-sidebar {
+  width: 180px;
+  height: 800px;
+  background-color: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  box-sizing: border-box;
+
+  /* 侧边栏标签页样式修改 */
+  .ant-tabs {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ant-tabs-content {
+    height: 100%;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .ant-tabs-tabpane {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  &.hidden {
+    width: 0;
+    border-right: none;
+  }
+}
+
+.pdf-annotation-sidebar-tabs {
+  display: flex;
+  border-bottom: 1px solid #e8e8e8;
+  flex-shrink: 0;
+
+  .sidebar-tab {
+    flex: 1;
+    padding: 12px 0;
+    text-align: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.3s;
+
+    &:hover {
+      color: #1890ff;
+    }
+
+    &.active {
+      color: #1890ff;
+      border-bottom: 2px solid #1890ff;
+    }
+  }
+}
+
+.pdf-annotation-sidebar-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* 允许在Flex布局中缩小 */
+}
+
+.sidebar-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  display: none;
+  flex-direction: column;
+
+  &.active {
+    display: flex;
+  }
+}
+
+.pdf-loading,
+.pdf-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 100%;
+  color: #666;
+  font-size: 16px;
+}
+
+.pdf-signature-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.annotation-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-right: 16px;
+}
+
+.color-picker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #d9d9d9;
+
+    &.active {
+      box-shadow: 0 0 0 2px #1890ff;
+    }
+  }
+}
+
+/* 签名面板样式 */
+.signature-controls {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+}
+
+.control-label {
+  margin-right: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.stroke-width-control {
+  display: flex;
+  align-items: center;
+}
+
+.signature-canvas-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.action-buttons {
+  margin-left: auto;
+}
+
+/* 文本选择预览样式 */
+.text-selection-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 7;
+
+  div {
+    position: absolute;
+    pointer-events: none;
+
+    &[data-preview-type='highlight'] {
+      mix-blend-mode: multiply;
+    }
+
+    &[data-preview-type='strikethrough'] {
+      height: 0;
+    }
+
+    &[data-preview-type='underline'] {
+      height: 0;
+    }
+  }
+}
+
+/* 动画关键帧定义 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 批注高亮元素 - 选中效果 */
+.annotation-highlight-selected {
+  border: 3px solid rgba(255, 30, 30, 0.8) !important;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), inset 0 0 6px rgba(255, 0, 0, 0.3) !important;
+  animation: annotation-border-pulse 1.5s infinite alternate !important;
+  z-index: 100 !important;
+  pointer-events: none !important;
+  background-color: transparent !important;
+  box-sizing: border-box !important;
+}
+
+/* 批注高亮脉冲动画 - 边框和投影效果 */
+@keyframes annotation-border-pulse {
+  from {
+    border: 3px solid rgba(255, 30, 30, 0.8);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6),
+      inset 0 0 6px rgba(255, 0, 0, 0.3);
+  }
+  to {
+    border: 4px solid rgba(255, 30, 30, 0.6);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4),
+      inset 0 0 8px rgba(255, 0, 0, 0.2);
+  }
+}
+
+.pdf-print-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: white;
+  font-size: 16px;
+
+  .print-message {
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+
+  .print-progress {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+}

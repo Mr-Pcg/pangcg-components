@@ -40,6 +40,7 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
     },
     columns,
     dataSource,
+    rowKey = 'id',
     ...rest
   } = props;
 
@@ -52,7 +53,8 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
       // 递归给数据源设置唯一标识 _key，绑定到 Table 的rowKey
       const recursionDataSource = (dataList: any[]) => {
         dataList.forEach((item) => {
-          item._key = item?.id || generateUUID();
+          // 设置唯一标识 _key， 默认赋值使用rowKey属性对应的值
+          item._key = item?.[rowKey]?.toString() || generateUUID();
           if (Array.isArray(item?.children) && item?.children?.length) {
             recursionDataSource(item.children);
           } else {
@@ -211,7 +213,7 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
             creatorProps_record?.children?.length
               ? creatorProps_record.children
               : null,
-          _key: creatorProps_record?.id || generateUUID(),
+          _key: generateUUID(),
         }
       : { _key: generateUUID(), children: null };
 
