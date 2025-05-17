@@ -1,0 +1,102 @@
+.pdf-annotation-toolbar {
+  padding: 8px 16px;
+  background-color: #f9f9f9;
+
+  .ant-divider-vertical {
+    height: 20px;
+    margin: 0 8px;
+  }
+
+  // 左侧工具区
+  .toolbar-left {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  // 右侧操作区
+  .toolbar-right {
+    margin-left: auto; // 推到最右边
+    display: flex;
+    align-items: center;
+  }
+
+  // 工具栏分隔线
+  .toolbar-divider {
+    height: 40px;
+    margin: 0 12px;
+  }
+
+  // 控件组容器
+  .toolbar-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    padding: 8px 0;
+    overflow-y: auto;
+  }
+
+  // 控件组单项
+  .toolbar-control-item {
+    display: flex;
+    align-items: center;
+
+    & > * {
+      margin: 0 4px;
+    }
+  }
+
+  // 工具组区域
+  .toolbar-tools {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow-x: auto;
+    padding-bottom: 4px;
+
+    // 工具组
+    .tool-group {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  // 单个工具按钮
+  .tool-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 4px;
+    cursor: pointer;
+
+    // 图标按钮
+    .tool-icon {
+      font-size: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s;
+
+      &.active {
+        background-color: #1890ff;
+        color: white;
+        border-color: #1890ff;
+      }
+    }
+
+    // 标题
+    .tool-title {
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+      margin-top: 4px;
+      text-align: center;
+    }
+  }
+}

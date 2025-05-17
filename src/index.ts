@@ -22,7 +22,10 @@ export { default as PdfPreview } from './PdfPreview';
 export { default as PdfAnnotationExtension } from './PdfAnnotationExtension';
 export type {
   Annotation,
-  AnnotationType,
+  AnnotationColor,
+  AnnotationStyle,
+  AnnotationTool,
+  PdfAnnotationExtensionProps,
 } from './PdfAnnotationExtension/types';
 
 /**************************************** 导出所有工具函数 *****************************************/

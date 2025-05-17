@@ -1,0 +1,201 @@
+.pdf-side-menu {
+  width: 200px;
+  background-color: #f7f9fb;
+  border-right: 1px solid #e8e8e8;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .side-menu-tabs {
+    display: flex;
+    width: 100%;
+    background-color: #fff;
+    border-bottom: 1px solid #e8e8e8;
+
+    .tab-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      position: relative;
+
+      &:hover {
+        color: #1890ff;
+      }
+
+      &.active {
+        color: #1890ff;
+        font-weight: 500;
+
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 20%;
+          width: 60%;
+          height: 2px;
+          background-color: #1890ff;
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-panel {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pdf-thumbnails {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    padding: 10px;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: #f0f0f0;
+    }
+  }
+
+  .thumbnail-item {
+    position: relative;
+    margin-bottom: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    padding: 4px;
+
+    &.active {
+      box-shadow: 0 0 0 2px #1890ff;
+    }
+
+    &:hover {
+      background-color: #e6f7ff;
+    }
+  }
+
+  .thumbnail-page-number {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 12px;
+    z-index: 1;
+
+    &.active_bg {
+      background-color: #1890ff;
+    }
+  }
+
+  .thumbnail-loading,
+  .thumbnail-error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    color: #999;
+  }
+
+  .annotation-list {
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    padding: 0 10px;
+  }
+
+  .empty-annotations {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    color: #999;
+  }
+
+  .annotation-page {
+    padding: 10px;
+    border-bottom: 1px solid #e8e8e8;
+    font-weight: bold;
+  }
+
+  .annotation-item {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    position: relative;
+    background-color: white;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+    }
+  }
+
+  .annotation-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+
+  .annotation-type {
+    font-weight: bold;
+    color: #1890ff;
+  }
+
+  .annotation-time {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .annotation-text {
+    margin-top: 5px;
+    word-break: break-all;
+  }
+
+  .annotation-delete {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    color: #ff4d4f;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .preview-placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #999;
+  }
+}

@@ -1,308 +1,225 @@
-import { InboxOutlined } from '@ant-design/icons';
-import { Button, ColorPicker, Modal, Radio, Tabs, Upload, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Modal, Tabs, Upload, message } from 'antd';
 import React, { useRef, useState } from 'react';
 import { Layer, Line, Stage } from 'react-konva';
 
 interface SignaturePanelProps {
-  type: 'signature' | 'stamp';
   visible: boolean;
-  onSave: (imageData: string) => void;
-  onCancel: () => void;
+  onClose: () => void;
+  onConfirm: (type: 'signature' | 'stamp', dataUrl: string) => void;
 }
 
-const { Dragger } = Upload;
-
-// 签名面板
 const SignaturePanel: React.FC<SignaturePanelProps> = ({
-  type,
   visible,
-  onSave,
-  onCancel,
+  onClose,
+  onConfirm,
 }) => {
-  const [lines, setLines] = useState<
-    Array<{ points: number[]; stroke: string; strokeWidth: number }>
-  >([]);
-  const [isDrawing, setIsDrawing] = useState<boolean>(false);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [color, setColor] = useState<string>(
-    type === 'signature' ? '#000000' : '#ff0000',
-  );
-  const [strokeWidth, setStrokeWidth] = useState<number>(
-    type === 'signature' ? 2 : 4,
-  );
+  const [activeTab, setActiveTab] = useState<string>('draw');
+  const [lines, setLines] = useState<Array<{ points: number[] }>>([]);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [stampPreview, setStampPreview] = useState<string>('');
+
   const stageRef = useRef<any>(null);
+  const layerRef = useRef<any>(null);
 
-  // 画布尺寸
-  const width = 400;
-  const height = 200;
+  // 清空签名
+  const handleClear = () => {
+    setLines([]);
+  };
 
-  // 处理鼠标按下事件
+  // 开始绘制
   const handleMouseDown = (e: any) => {
     setIsDrawing(true);
     const pos = e.target.getStage().getPointerPosition();
-    setLines([
-      ...lines,
-      {
-        points: [pos.x, pos.y],
-        stroke: color,
-        strokeWidth: strokeWidth,
-      },
-    ]);
+    setLines([...lines, { points: [pos.x, pos.y] }]);
   };
 
-  // 处理鼠标移动事件
+  // 绘制中
   const handleMouseMove = (e: any) => {
     if (!isDrawing) return;
 
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
-    const lastLine = lines[lines.length - 1];
 
-    // 添加新的点到最后一条线
+    const lastLine = lines[lines.length - 1];
+    if (!lastLine) return;
+
     lastLine.points = lastLine.points.concat([point.x, point.y]);
 
-    // 更新线条
     setLines([...lines.slice(0, -1), lastLine]);
   };
 
-  // 处理鼠标松开事件
+  // 结束绘制
   const handleMouseUp = () => {
     setIsDrawing(false);
   };
 
-  // 处理触摸事件
-  const handleTouchStart = (e: any) => {
-    e.evt.preventDefault();
-    const stage = e.target.getStage();
-    const pos = stage.getPointerPosition();
-    setIsDrawing(true);
-    setLines([
-      ...lines,
-      {
-        points: [pos.x, pos.y],
-        stroke: color,
-        strokeWidth: strokeWidth,
-      },
-    ]);
-  };
-
-  const handleTouchMove = (e: any) => {
-    e.evt.preventDefault();
-    if (!isDrawing) return;
-
-    const stage = e.target.getStage();
-    const point = stage.getPointerPosition();
-    const lastLine = lines[lines.length - 1];
-
-    // 添加新的点到最后一条线
-    lastLine.points = lastLine.points.concat([point.x, point.y]);
-
-    // 更新线条
-    setLines([...lines.slice(0, -1), lastLine]);
-  };
-
-  const handleTouchEnd = (e: any) => {
-    e.evt.preventDefault();
-    setIsDrawing(false);
-  };
-
-  // 清除画布
-  const handleClear = () => {
-    setLines([]);
-    setUploadedImage(null);
-  };
-
-  // 保存图像
-  const handleSave = () => {
-    if (uploadedImage) {
-      onSave(uploadedImage);
-      return;
-    }
-
+  // 确认签名
+  const handleConfirmSignature = () => {
     if (lines.length === 0) {
-      message.warning('请先绘制或上传图像');
+      message.error('请先绘制签名');
       return;
     }
 
     if (stageRef.current) {
-      const dataURL = stageRef.current.toDataURL();
-      onSave(dataURL);
+      const dataUrl = stageRef.current.toDataURL();
+      onConfirm('signature', dataUrl);
+      onClose();
+      handleClear();
     }
   };
 
-  // 处理颜色变化
-  const handleColorChange = (color: any, hex: string) => {
-    setColor(hex);
+  // 确认印章
+  const handleConfirmStamp = () => {
+    if (!stampPreview) {
+      message.error('请先上传印章图片');
+      return;
+    }
+
+    onConfirm('stamp', stampPreview);
+    onClose();
+    setStampPreview('');
   };
 
-  // 预设颜色
-  const presetColors =
-    type === 'signature'
-      ? [
-          '#000000', // 黑色
-          '#0000FF', // 蓝色
-          '#FF0000', // 红色
-          '#008000', // 绿色
-        ]
-      : [
-          '#FF0000', // 红色
-          '#0000FF', // 蓝色
-          '#800000', // 深红色
-          '#FF8C00', // 深橙色
-        ];
+  // 处理印章上传前
+  const beforeUpload = (file: File) => {
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('只能上传图片文件!');
+      return false;
+    }
 
-  // 定义标签页内容
-  const tabItems = [
-    {
-      key: 'draw',
-      label: '手绘',
-      children: (
-        <div className="signature-canvas-container">
-          <Stage
-            width={width}
-            height={height}
-            ref={stageRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            style={{
-              border: '1px solid #ddd',
-              borderRadius: 4,
-              background: '#fff',
-            }}
-          >
-            <Layer>
-              {lines.map((line, i) => (
-                <Line
-                  key={i}
-                  points={line.points}
-                  stroke={line.stroke}
-                  strokeWidth={line.strokeWidth}
-                  tension={0.5}
-                  lineCap="round"
-                  lineJoin="round"
-                />
-              ))}
-            </Layer>
-          </Stage>
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不能超过2MB!');
+      return false;
+    }
 
-          <div className="signature-controls">
-            <div className="control-group">
-              <div className="control-label">颜色:</div>
-              <ColorPicker
-                value={color}
-                onChange={handleColorChange}
-                presets={[
-                  {
-                    label: '预设颜色',
-                    colors: presetColors,
-                  },
-                ]}
-                size="small"
-                format="hex"
-              />
-            </div>
+    // 将图片转换为Base64
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setStampPreview(reader.result as string);
+    };
 
-            <div className="control-group">
-              <div className="control-label">线条粗细:</div>
-              <div className="stroke-width-control">
-                <Radio.Group
-                  value={strokeWidth}
-                  onChange={(e) => setStrokeWidth(e.target.value)}
-                  buttonStyle="solid"
-                  size="small"
-                >
-                  <Radio.Button value={1}>细</Radio.Button>
-                  <Radio.Button value={3}>中</Radio.Button>
-                  <Radio.Button value={5}>粗</Radio.Button>
-                </Radio.Group>
-              </div>
-            </div>
+    return false; // 阻止自动上传
+  };
 
-            <div className="action-buttons">
-              <Button
-                size="middle"
-                onClick={handleClear}
-                style={{ marginRight: 8 }}
-              >
-                清除
-              </Button>
-              <Button size="middle" type="primary" onClick={handleSave}>
-                保存
-              </Button>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: 'upload',
-      label: '上传',
-      children: uploadedImage ? (
-        <div style={{ textAlign: 'center' }}>
-          <img
-            src={uploadedImage}
-            alt="上传的图片"
-            style={{
-              maxWidth: '100%',
-              maxHeight: 200,
-              marginBottom: 16,
-              border: '1px solid #ddd',
-              borderRadius: 4,
-            }}
-          />
-          <div>
-            <Button onClick={handleClear} style={{ marginRight: 8 }}>
-              清除
-            </Button>
-            <Button type="primary" onClick={handleSave}>
-              使用此图片
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <Dragger
-          accept=".png,.jpg,.jpeg"
-          showUploadList={false}
-          beforeUpload={(file) => {
-            // 直接在这里处理文件上传
-            const reader = new FileReader(); // 创建文件读取器，将文件转换为 base64 格式的数据 URL
-            reader.onload = (e) => {
-              if (e.target?.result) {
-                setUploadedImage(e.target.result as string);
-              }
-            };
-            reader.readAsDataURL(file);
-
-            // 返回false阻止默认上传行为
-            return false;
-          }}
-          multiple={false} // 禁止多文件上传
-        >
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
-          <p className="ant-upload-hint">
-            支持单个图片上传，推荐使用透明背景的PNG图片
-          </p>
-        </Dragger>
-      ),
-    },
-  ];
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>上传</div>
+    </div>
+  );
 
   return (
     <Modal
-      title={type === 'signature' ? '添加签名' : '添加盖章'}
+      title="签名 & 印章"
       open={visible}
-      onCancel={onCancel}
+      onCancel={onClose}
       footer={null}
       width={500}
     >
-      <Tabs defaultActiveKey="draw" items={tabItems} />
+      <Tabs
+        activeKey={activeTab}
+        onChange={(key) => setActiveTab(key)}
+        items={[
+          {
+            key: 'draw',
+            label: '手写签名',
+            children: (
+              <div>
+                <div
+                  style={{
+                    border: '1px solid #d9d9d9',
+                    borderRadius: '4px',
+                    marginBottom: 16,
+                  }}
+                >
+                  <Stage
+                    ref={stageRef}
+                    width={450}
+                    height={200}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                    style={{ background: '#f0f0f0' }}
+                  >
+                    <Layer ref={layerRef}>
+                      {lines.map((line, i) => (
+                        <Line
+                          key={i}
+                          points={line.points}
+                          stroke="#000"
+                          strokeWidth={2}
+                          tension={0.5}
+                          lineCap="round"
+                          lineJoin="round"
+                        />
+                      ))}
+                    </Layer>
+                  </Stage>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button onClick={handleClear} style={{ marginRight: 8 }}>
+                    清除
+                  </Button>
+                  <Button type="primary" onClick={handleConfirmSignature}>
+                    确认
+                  </Button>
+                </div>
+              </div>
+            ),
+          },
+          {
+            key: 'stamp',
+            label: '印章',
+            children: (
+              <div>
+                <Upload
+                  listType="picture-card"
+                  showUploadList={false}
+                  beforeUpload={beforeUpload}
+                >
+                  {stampPreview ? (
+                    <img
+                      src={stampPreview}
+                      alt="印章"
+                      style={{ width: '100%', objectFit: 'contain' }}
+                    />
+                  ) : (
+                    uploadButton
+                  )}
+                </Upload>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    marginTop: 16,
+                  }}
+                >
+                  {stampPreview && (
+                    <Button
+                      onClick={() => setStampPreview('')}
+                      style={{ marginRight: 8 }}
+                    >
+                      清除
+                    </Button>
+                  )}
+                  <Button
+                    type="primary"
+                    onClick={handleConfirmStamp}
+                    disabled={!stampPreview}
+                  >
+                    确认
+                  </Button>
+                </div>
+              </div>
+            ),
+          },
+        ]}
+      />
     </Modal>
   );
 };
