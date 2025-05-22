@@ -115,19 +115,21 @@ const MyPdfViewer: React.FC = () => {
   ] as Annotation[];
 
   return (
-    <PdfAnnotationExtension
-      fileUrl="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
-      annotationList={predefinedAnnotations}
-      onSave={(annotations: Annotation[], saveFile: Blob | undefined) => {
-        console.log('保存的批注:', annotations);
-        // 可以将批注数据保存到服务器: updatedPdf为Blob格式，可以转成 File 格式
-        const file = new File([saveFile as Blob], '示例文档.pdf', {
-          type: 'application/pdf',
-        });
-        console.log(file, '保存的文件----->>');
-      }}
-      fileName="示例文档.pdf"
-    />
+    <div style={{ height: 910 }}>
+      <PdfAnnotationExtension
+        fileUrl="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
+        annotationList={predefinedAnnotations}
+        onSave={(annotations: Annotation[], saveFile: Blob | undefined) => {
+          console.log('保存的批注:', annotations);
+          // 可以将批注数据保存到服务器: updatedPdf为Blob格式，可以转成 File 格式
+          const file = new File([saveFile as Blob], '示例文档.pdf', {
+            type: 'application/pdf',
+          });
+          console.log(file, '保存的文件----->>');
+        }}
+        fileName="示例文档.pdf"
+      />
+    </div>
   );
 };
 

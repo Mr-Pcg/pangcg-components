@@ -7,8 +7,8 @@ import type {
   InputProps,
   RadioProps,
   SelectProps,
-  TableProps,
   SwitchProps,
+  TableProps,
   TimePickerProps,
   TreeSelectProps,
 } from 'antd';
@@ -164,4 +164,9 @@ export interface EditFormTableProps<T = any> extends EditTableProps<T> {
    * 创建行数据的配置
    */
   recordCreatorProps?: RecordCreatorProps;
+
+  /**
+   * 表格的row_key
+   */
+  rowKey: string | undefined;
 }

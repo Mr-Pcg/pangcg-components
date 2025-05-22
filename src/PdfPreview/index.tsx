@@ -1,17 +1,16 @@
 import {
   DownloadOutlined,
-  LeftOutlined,
-  RightOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
   ZoomInOutlined,
   ZoomOutOutlined,
 } from '@ant-design/icons';
-import { Button, Spin, message } from 'antd';
-import React, { CSSProperties, useEffect, useState } from 'react';
+import { Button, Divider, Spin, message } from 'antd';
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import './index.less';
 
 // 设置PDF.js worker路径
-// pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 type FileUrlType = string | Blob | File;
@@ -55,6 +54,15 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [pdfFile, setPdfFile] = useState<FileUrlType | null>(null);
   const [displayFileName, setDisplayFileName] = useState<string>(fileName);
+  const [thumbnailCollapsed, setThumbnailCollapsed] = useState<boolean>(false);
+  // 标记当前滚动来源： pdf ｜ 缩略图pdf
+  const [activeScrolling, setActiveScrolling] = useState<
+    'pdf' | 'thumbnail' | null
+  >(null);
+
+  const pdfContainerRef = useRef<HTMLDivElement>(null); // pdf区域
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null); // 缩略图区域
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 判断是否为文件对象
   const isFileObject = (file: any): file is File => {
@@ -68,7 +76,6 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
 
   /**
    * 根据 fileUrl 判断文件类型 和 设置文件名称
-   * @returns
    */
   const processFile = async () => {
     let file_name: string = '';
@@ -84,7 +91,6 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
         file_name = fileUrl.split('/').pop() || fileName; // 从URL中提取文件名
       } else if (typeof fileUrl === 'string' && fileUrl.startsWith('data:')) {
         // 检查是否为Base64 (string 类型且以 data: 开头)
-
         setPdfFile(fileUrl);
       } else if (isBlobObject(fileUrl) || isFileObject(fileUrl)) {
         // 处理文件流 (Blob 或 File 对象)
@@ -126,21 +132,64 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
     setLoading(false);
   };
 
-  // 页数变化事件
-  const changePage = (offset: number) => {
-    setPageNumber((prevPageNumber) => {
-      const newPageNumber = prevPageNumber + offset;
-      return newPageNumber >= 1 && newPageNumber <= (numPages || 1)
-        ? newPageNumber
-        : prevPageNumber;
-    });
+  // 缩略图文档加载成功
+  const onThumbnailDocumentLoadSuccess = () => {
+    // 缩略图加载成功
   };
 
-  // 上一页 事件
-  const previousPage = () => changePage(-1);
+  // 滚动PDF到指定页面
+  const scrollPdfToPage = (page: number) => {
+    if (!pdfContainerRef.current || !numPages) return;
 
-  // 下一页 事件
-  const nextPage = () => changePage(1);
+    setActiveScrolling('thumbnail');
+
+    // 计算每页的大致高度和位置
+    const pdfContainer = pdfContainerRef.current;
+    const totalHeight = pdfContainer.scrollHeight;
+    const pageHeight = totalHeight / (numPages || 1);
+
+    // 计算目标滚动位置 - 直接滚动到页面顶部，不再居中显示
+    const targetScrollTop = (page - 1) * pageHeight;
+
+    // 使用平滑滚动
+    pdfContainer.scrollTo({
+      top: targetScrollTop,
+      behavior: 'smooth',
+    });
+
+    // 滚动结束后重置activeScrolling状态
+    setTimeout(() => {
+      setActiveScrolling(null);
+    }, 500);
+  };
+
+  // 点击缩略图跳转到指定页面
+  const handleThumbnailClick = (pageIndex: number) => {
+    setPageNumber(pageIndex + 1);
+    scrollPdfToPage(pageIndex + 1);
+  };
+
+  // 滚动缩略图到当前页
+  const scrollThumbnailToCurrentPage = () => {
+    if (!thumbnailContainerRef.current || !pageNumber || !numPages) return;
+
+    const thumbnailContainer = thumbnailContainerRef.current;
+    const containerHeight = thumbnailContainer.clientHeight;
+    const totalHeight = thumbnailContainer.scrollHeight;
+    const thumbnailHeight = totalHeight / (numPages || 1);
+
+    // 计算目标滚动位置
+    const targetScrollTop =
+      (pageNumber - 1) * thumbnailHeight -
+      containerHeight / 2 +
+      thumbnailHeight / 2;
+
+    // 使用平滑滚动
+    thumbnailContainer.scrollTo({
+      top: Math.max(0, targetScrollTop),
+      behavior: 'smooth',
+    });
+  };
 
   // pdf：放大
   const zoomIn = () => {
@@ -183,6 +232,76 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
     }
   };
 
+  // 切换侧边栏收缩状态
+  const toggleThumbnailCollapsed = () => {
+    setThumbnailCollapsed(!thumbnailCollapsed);
+  };
+
+  // 监听PDF滚动，同步缩略图
+  useEffect(() => {
+    const pdfContainer = pdfContainerRef.current;
+    if (!pdfContainer || !numPages) return;
+
+    const handleScroll = () => {
+      // 如果是由缩略图触发的滚动，不处理
+      if (activeScrolling === 'thumbnail') return;
+
+      // 标记为PDF正在滚动
+      setActiveScrolling('pdf');
+
+      // 计算当前页码
+      const scrollTop = pdfContainer.scrollTop;
+      const totalHeight = pdfContainer.scrollHeight;
+      const pageHeight = totalHeight / numPages;
+
+      // 根据滚动位置计算当前页码
+      const currentPage = Math.floor(scrollTop / pageHeight) + 1;
+      const offset = (scrollTop % pageHeight) / pageHeight;
+
+      // 如果滚动超过页面的一半，则认为是下一页
+      const calculatedPage = offset > 0.5 ? currentPage + 1 : currentPage;
+      const newPage = Math.max(1, Math.min(calculatedPage, numPages));
+
+      if (newPage !== pageNumber) {
+        setPageNumber(newPage);
+      }
+
+      // 延迟重置activeScrolling状态
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        setActiveScrolling(null);
+      }, 150);
+    };
+
+    // 节流处理，减少滚动事件触发频率
+    let scrollTimeout: NodeJS.Timeout | null = null;
+    const throttledHandleScroll = () => {
+      if (!scrollTimeout) {
+        scrollTimeout = setTimeout(() => {
+          handleScroll();
+          scrollTimeout = null;
+        }, 50);
+      }
+    };
+
+    pdfContainer.addEventListener('scroll', throttledHandleScroll);
+
+    return () => {
+      pdfContainer.removeEventListener('scroll', throttledHandleScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    };
+  }, [numPages, pageNumber, activeScrolling]);
+
+  // 当页码变化时，如果是由PDF滚动引起的，滚动缩略图
+  useEffect(() => {
+    if (activeScrolling === 'pdf') {
+      scrollThumbnailToCurrentPage();
+    }
+  }, [pageNumber, activeScrolling]);
+
   // 渲染内容
   const renderContent = () => {
     if (loading || !pdfFile) {
@@ -190,7 +309,17 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
         <div className="document-preview-loading">
           <div className="loading-container">
             <Spin size="large" />
-            <div className="loading-text">加载中...</div>
+            <div
+              className="loading-text"
+              style={{
+                marginTop: '16px',
+                color: 'rgba(0, 0, 0, 0.65)',
+                fontSize: '14px',
+                fontWeight: 500,
+              }}
+            >
+              正在加载PDF文件，请稍候...
+            </div>
           </div>
         </div>
       );
@@ -198,43 +327,111 @@ const PdfPreview: React.FC<PdfPreviewProps> = ({
 
     return (
       <>
-        <div className="pdf-container">
-          <Document
-            file={pdfFile}
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={(error) => {
-              console.error('Error loading PDF:', error);
-              message.error('无法加载PDF文件');
-              setLoading(false);
-            }}
-            loading={<Spin size="large" />}
-          >
-            <Page
-              pageNumber={pageNumber}
-              scale={scale}
-              renderTextLayer={false}
-              renderAnnotationLayer={false}
-            />
-          </Document>
-        </div>
         <div className="pdf-controls">
-          <Button
-            icon={<LeftOutlined />}
-            onClick={previousPage}
-            disabled={pageNumber <= 1}
-          />
-          <span>{`${pageNumber} / ${numPages || 1}`}</span>
-          <Button
-            icon={<RightOutlined />}
-            onClick={nextPage}
-            disabled={pageNumber >= (numPages || 1)}
-          />
-          <Button icon={<ZoomOutOutlined />} onClick={zoomOut} />
-          <span>{`${Math.round(scale * 100)}%`}</span>
-          <Button icon={<ZoomInOutlined />} onClick={zoomIn} />
-          <Button icon={<DownloadOutlined />} onClick={downloadFile}>
-            下载
-          </Button>
+          <div className="pdf-controls-left">
+            <Button
+              type="text"
+              icon={
+                thumbnailCollapsed ? (
+                  <MenuUnfoldOutlined />
+                ) : (
+                  <MenuFoldOutlined />
+                )
+              }
+              onClick={toggleThumbnailCollapsed}
+              className="thumbnail-toggle-btn"
+            />
+          </div>
+          <div className="pdf-controls-center">
+            <div className="page-indicator">
+              {`${pageNumber} / ${numPages || 1}`}
+            </div>
+            <Divider type="vertical" className="page-divider" />
+            <div>
+              <Button
+                type="text"
+                icon={<ZoomOutOutlined />}
+                onClick={zoomOut}
+              />
+              <span className="zoom-indicator">{`${Math.round(
+                scale * 100,
+              )}%`}</span>
+              <Button type="text" icon={<ZoomInOutlined />} onClick={zoomIn} />
+            </div>
+          </div>
+
+          <div className="pdf-controls-right">
+            <Button
+              type="text"
+              icon={<DownloadOutlined />}
+              onClick={downloadFile}
+              className="download-btn"
+            />
+          </div>
+        </div>
+
+        <div className="pdf-content-container">
+          <div
+            className={`pdf-thumbnails-container ${
+              thumbnailCollapsed ? 'collapsed' : ''
+            }`}
+            ref={thumbnailContainerRef}
+          >
+            {numPages && (
+              <Document
+                file={pdfFile}
+                onLoadSuccess={onThumbnailDocumentLoadSuccess}
+                loading={<Spin size="small" />}
+              >
+                {Array.from(new Array(numPages), (_, index) => (
+                  <div
+                    key={`thumbnail-${index}`}
+                    className={`pdf-thumbnail ${
+                      pageNumber === index + 1 ? 'active' : ''
+                    }`}
+                    onClick={() => handleThumbnailClick(index)}
+                  >
+                    <Page
+                      pageNumber={index + 1}
+                      scale={0.15}
+                      renderTextLayer={false}
+                      renderAnnotationLayer={false}
+                    />
+                    <div className="thumbnail-page-number">{index + 1}</div>
+                  </div>
+                ))}
+              </Document>
+            )}
+          </div>
+
+          <div className="pdf-container" ref={pdfContainerRef}>
+            <Document
+              file={pdfFile}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={(error) => {
+                console.error('Error loading PDF:', error);
+                message.error('无法加载PDF文件');
+                setLoading(false);
+              }}
+              loading={<Spin size="large" />}
+            >
+              {Array.from(new Array(numPages), (_, index) => (
+                <div
+                  key={`page-wrapper-${index}`}
+                  className="pdf-page-wrapper"
+                  id={`pdf-page-${index + 1}`}
+                >
+                  <Page
+                    key={`page-${index}`}
+                    pageNumber={index + 1}
+                    scale={scale}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                  />
+                </div>
+              ))}
+            </Document>
+          </div>
         </div>
       </>
     );

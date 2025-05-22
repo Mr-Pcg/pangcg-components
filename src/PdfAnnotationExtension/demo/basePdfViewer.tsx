@@ -20,11 +20,13 @@ const DemoPage = () => {
   };
 
   return (
-    <PdfAnnotationExtension
-      fileUrl={pdfUrl}
-      fileName="示例文档.pdf"
-      onSave={handleSave}
-    />
+    <div style={{ height: 910 }}>
+      <PdfAnnotationExtension
+        fileUrl={pdfUrl}
+        fileName="示例文档.pdf"
+        onSave={handleSave}
+      />
+    </div>
   );
 };
 

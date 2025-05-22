@@ -1,9 +1,9 @@
 .document-preview-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: auto;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   background-color: #f0f2f5;
   position: relative;
 }
@@ -28,53 +28,293 @@
   color: rgba(0, 0, 0, 0.65);
 }
 
-.pdf-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  position: relative;
-
-  .react-pdf__Document {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    padding: 16px;
-    overflow: auto;
-  }
-
-  .react-pdf__Page {
-    margin: 0 auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  .react-pdf__Page__canvas {
-    margin: 0 auto;
-  }
-}
-
 .pdf-controls {
   width: 100%;
   height: 56px;
   box-sizing: border-box;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  background-color: #fff;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   z-index: 10;
+  padding: 0 16px;
+
+  .pdf-controls-left,
+  .pdf-controls-center,
+  .pdf-controls-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .pdf-controls-center {
+    span {
+      user-select: none;
+      color: #fff;
+    }
+
+    .page-divider {
+      background-color: #fff;
+    }
+  }
 
   button {
+    color: #fff;
+
+    &:hover {
+      color: #fff;
+      background-color: transparent !important;
+    }
+
+    &[disabled] {
+      color: rgba(255, 255, 255, 0.3) !important;
+    }
+  }
+
+  .page-indicator {
+    color: #fff;
     margin: 0 8px;
   }
 
-  span {
-    margin: 0 12px;
-    user-select: none;
+  .zoom-indicator {
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .thumbnail-toggle-btn {
+    color: #ffffff;
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      color: #ffffff !important;
+    }
+  }
+
+  .download-btn {
+    color: #ffffff;
+    margin-left: 8px;
+    border-radius: 4px;
+
+    &:hover {
+      color: #ffffff !important;
+    }
+  }
+}
+
+.pdf-content-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  width: 100%;
+  height: calc(100% - 56px); // 减去工具栏高度
+}
+
+.pdf-thumbnails-container {
+  width: 160px;
+  min-width: 160px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #eee;
+  padding: 8px;
+  box-sizing: border-box;
+  border-right: 1px solid #ddd;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: width, min-width, padding, transform;
+  -webkit-overflow-scrolling: touch; /* 添加惯性滚动 */
+  scrollbar-width: thin; /* Firefox */
+  scroll-behavior: smooth;
+  touch-action: pan-y;
+
+  &.collapsed {
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    opacity: 0;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  .react-pdf__Document {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    will-change: transform;
+  }
+
+  .pdf-thumbnail {
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    position: relative;
+    background-color: white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease, transform 0.2s ease;
+    width: 130px;
+    will-change: transform, box-shadow;
+    backface-visibility: hidden; /* 提高渲染性能 */
+    transform: translateZ(0); /* 启用硬件加速 */
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(24, 144, 255, 0.05);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px) scale(1.02);
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    &.active {
+      border-color: #1890ff;
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(24, 144, 255, 0.2);
+
+      &::before {
+        background-color: rgba(24, 144, 255, 0.1);
+        opacity: 1;
+      }
+
+      .thumbnail-page-number {
+        background-color: rgba(24, 144, 255, 0.8);
+        font-weight: bold;
+      }
+    }
+
+    .react-pdf__Page {
+      margin: 0 auto;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .react-pdf__Page__canvas {
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 auto;
+      backface-visibility: hidden;
+    }
+
+    .thumbnail-page-number {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      text-align: center;
+      font-size: 10px;
+      padding: 1px 0;
+      transition: background-color 0.2s ease;
+      z-index: 2;
+    }
+  }
+}
+
+.pdf-container {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f5f5f5;
+  transition: all 0.3s ease;
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch; /* 添加惯性滚动 */
+  scrollbar-width: thin; /* Firefox */
+  perspective: 1000px; /* 增强3D效果 */
+  scroll-behavior: smooth;
+  touch-action: pan-y;
+  scroll-snap-type: y proximity; /* 添加滚动吸附 */
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  .react-pdf__Document {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    will-change: transform;
+    transform: translateZ(0); /* 启用硬件加速 */
+  }
+
+  .pdf-page-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    transform: translateZ(0);
+    will-change: transform;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    position: relative;
+    scroll-snap-align: start; /* 页面开始处吸附 */
+  }
+
+  .react-pdf__Page {
+    margin-bottom: 0;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    will-change: transform;
+    backface-visibility: hidden; /* 提高渲染性能 */
+    transform: translateZ(0); /* 启用硬件加速 */
+    border-radius: 2px;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .react-pdf__Page__canvas {
+    margin: 0 auto;
+    backface-visibility: hidden;
   }
 }

@@ -2,7 +2,7 @@
 // 导入：PdfAnnotationExtension 组件
 
 // 导出：可编辑表格( EditFormTable )组件
-export { default as EditFormTable } from './EditFormTable';
+export { default as EditFormTable, useEditFormTable } from './EditFormTable';
 export type { EditColumnsType } from './EditFormTable/types';
 
 // 导出： 可编辑树形表格( EditFormTreeTable )组件和自定义hooks：useEditFormTreeTable

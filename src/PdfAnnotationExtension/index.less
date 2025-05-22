@@ -9,20 +9,48 @@
 }
 
 .pdf-annotation-header {
+  height: 50px;
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 8px;
   background-color: #fff;
   border-bottom: 1px solid #e8e8e8;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  z-index: 2;
-}
+  box-sizing: border-box;
+  overflow-x: auto;
 
-/* 工具栏行样式 */
-.pdf-annotation-toolbar-row {
-  padding: 0 16px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #e8e8e8;
+  .pdf-annotation-actions {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+
+    > * {
+      margin: 0 4px;
+    }
+
+    .pdf-annotation-actions-sidebar,
+    .pdf-annotation-actions-option {
+      display: flex;
+      align-items: center;
+    }
+
+    .pdf-annotation-actions-page {
+      margin-right: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .pdf-annotation-actions-zoom {
+      display: flex;
+      align-items: center;
+    }
+
+    .pdf-annotation-actions-save {
+      display: flex;
+      align-items: center;
+    }
+  }
 }
 
 .pdf-annotation-filename {
@@ -33,34 +61,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.pdf-annotation-actions {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between;
-
-  > * {
-    margin: 0 4px;
-  }
-
-  .pdf-annotation-actions-sidebar,
-  .pdf-annotation-actions-zoom,
-  .pdf-annotation-actions-page {
-    display: flex;
-    align-items: center;
-  }
-
-  .pdf-annotation-actions-zoom {
-    margin-right: 24px;
-  }
-
-  .pdf-annotation-actions-save {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-  }
 }
 
 .pdf-annotation-content {
@@ -81,8 +81,8 @@
 
   .pdf-viewer {
     position: relative;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    // background-color: white;
+    // box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
 
     /* 文本选择提示框 */
@@ -250,8 +250,7 @@
 }
 
 .pdf-annotation-sidebar {
-  width: 180px;
-  height: 800px;
+  width: 200px;
   background-color: #fff;
   border-right: 1px solid #e8e8e8;
   overflow: hidden;
@@ -266,6 +265,10 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+  }
+
+  .ant-tabs-nav {
+    margin-bottom: 0;
   }
 
   .ant-tabs-content {
@@ -340,7 +343,6 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  width: 100%;
   color: #666;
   font-size: 16px;
 }
@@ -356,13 +358,6 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-}
-
-.annotation-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-right: 16px;
 }
 
 .color-picker {

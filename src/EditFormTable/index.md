@@ -20,12 +20,15 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 ## 注意事项
 
 1. 暂时不支持树形数据结构的表格编辑
+2. EditFormTable 组件的 rowKey 要和 useEditFormTable 的第二个参数的 rowKey 保持一致， 默认 id 字段
 
 ## 代码演示
 
 <code src="./demo/editFormTable" ></code>
 
 ## API
+
+### EditFormTable
 
 | 参数               | 说明                               | 类型                                           | 默认值 | 版本  |
 | ------------------ | ---------------------------------- | ---------------------------------------------- | ------ | ----- |
@@ -66,3 +69,16 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 | switch      | 开关           | `SwitchProps`      | `-`    | 0.0.1 |
 | timePicker  | 时间选择器     | `TimePickerProps`  | `-`    | 0.0.1 |
 | treeSelect  | 树选择器       | `TreeSelectProps`  | `-`    | 0.0.1 |
+
+## useEditFormTable 自定义 hooks
+
+useEditFormTable: 提供了操作表格数据的工具方法，用于在表格外部进行数据操作。
+useEditFormTable: 接受两个参数 form（表单的 form） 和 rowKey （绑定到 EditFormTable 组件的 rowKey， 一定保持一致）
+
+| 参数名            | 说明                           | 类型                                                                                  | 版本  |
+| ----------------- | ------------------------------ | ------------------------------------------------------------------------------------- | ----- |
+| addRecord         | 添加一行数据                   | `(formListName: string, record?: object) => void`                                     | 0.0.4 |
+| deleteRecord      | 删除指定行数据                 | `(formListName: string, deleteIndex: number) => void`                                 | 0.0.4 |
+| updateRecord      | 更新整行数据                   | `(formListName: string, updateIndex: number, record: any) => void`                    | 0.0.4 |
+| updateRecordField | 更新指定行的特定字段           | `(formListName: string, updateIndex: number, field: string, fieldValue: any) => void` | 0.0.4 |
+| updateFormList    | 通过修改整个数据源来更新指定行 | `(formListName: string, updateIndex: number, record: any) => void`                    | 0.0.4 |

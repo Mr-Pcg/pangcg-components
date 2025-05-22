@@ -1,5 +1,4 @@
 import {
-  CloseCircleOutlined,
   DownloadOutlined,
   LeftOutlined,
   MenuFoldOutlined,
@@ -977,15 +976,6 @@ const PdfAnnotationExtension = ({
   };
 
   /**
-   * 取消打印或下载操作
-   */
-  const handleCancelOperation = () => {
-    setIsPrinting(false);
-    setPrintProgress('');
-    message.info('操作已取消');
-  };
-
-  /**
    * 处理下载按钮点击 - 显示选择弹窗
    */
   const handleDownloadPrintClick = (type: 'print' | 'download') => {
@@ -1076,49 +1066,46 @@ const PdfAnnotationExtension = ({
             正在处理PDF文件，请勿关闭或操作页面
           </div>
           <div className="print-progress">{printProgress}</div>
-          <Button
-            style={{ marginTop: 20 }}
-            danger
-            icon={<CloseCircleOutlined />}
-            onClick={handleCancelOperation}
-          >
-            终止操作
-          </Button>
         </div>
       )}
 
       {/* 头部操作: 缩放｜保存 */}
       <div className="pdf-annotation-header">
         <div className="pdf-annotation-actions">
-          <div className="pdf-annotation-actions-sidebar">
-            <Button
-              type="text"
-              icon={
-                sidebarVisible ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />
-              }
-              onClick={toggleSidebar}
-            />
+          <div
+            className="pdf-annotation-actions-sidebar"
+            style={{ cursor: 'pointer' }}
+            onClick={toggleSidebar}
+          >
+            {sidebarVisible ? (
+              <MenuFoldOutlined style={{ fontSize: 20 }} />
+            ) : (
+              <MenuUnfoldOutlined style={{ fontSize: 20 }} />
+            )}
           </div>
-          <div className="pdf-annotation-actions-zoom">
-            <Button icon={<ZoomOutOutlined />} onClick={zoomOut} />
-            <span style={{ margin: '0 8px' }}>{Math.round(scale * 100)}%</span>
-            <Button icon={<ZoomInOutlined />} onClick={zoomIn} />
-          </div>
-
-          <div className="pdf-annotation-actions-page">
-            <Button
-              icon={<LeftOutlined />}
-              onClick={() => changePage(-1)}
-              disabled={currentPage <= 1}
-            />
-            <span
-              style={{ margin: '0 8px' }}
-            >{`${currentPage} / ${numPages}`}</span>
-            <Button
-              icon={<RightOutlined />}
-              onClick={() => changePage(1)}
-              disabled={currentPage >= numPages}
-            />
+          <div className="pdf-annotation-actions-option">
+            <div className="pdf-annotation-actions-page">
+              <Button
+                icon={<LeftOutlined />}
+                onClick={() => changePage(-1)}
+                disabled={currentPage <= 1}
+              />
+              <span
+                style={{ margin: '0 8px', minWidth: 32 }}
+              >{`${currentPage} / ${numPages}`}</span>
+              <Button
+                icon={<RightOutlined />}
+                onClick={() => changePage(1)}
+                disabled={currentPage >= numPages}
+              />
+            </div>
+            <div className="pdf-annotation-actions-zoom">
+              <Button icon={<ZoomOutOutlined />} onClick={zoomOut} />
+              <span style={{ margin: '0 8px' }}>
+                {Math.round(scale * 100)}%
+              </span>
+              <Button icon={<ZoomInOutlined />} onClick={zoomIn} />
+            </div>
           </div>
           {!readOnly && (
             <div className="pdf-annotation-actions-save">
@@ -1151,17 +1138,15 @@ const PdfAnnotationExtension = ({
 
       {/* 工具栏 */}
       {!readOnly && (
-        <div className="pdf-annotation-toolbar-row">
-          <AnnotationToolbar
-            activeTool={activeTool} // 当前选中的工具
-            activeColor={activeColor} // 当前选中的颜色
-            activeLineStyle={activeLineStyle} // 当前选中的线型
-            onToolSelect={handleToolSelect} // 工具选择
-            onColorChange={setActiveColor} // 颜色选择
-            onLineStyleChange={handleLineStyleChange} // 线型选择
-            readOnly={readOnly} // 是否只读
-          />
-        </div>
+        <AnnotationToolbar
+          activeTool={activeTool} // 当前选中的工具
+          activeColor={activeColor} // 当前选中的颜色
+          activeLineStyle={activeLineStyle} // 当前选中的线型
+          onToolSelect={handleToolSelect} // 工具选择
+          onColorChange={setActiveColor} // 颜色选择
+          onLineStyleChange={handleLineStyleChange} // 线型选择
+          readOnly={readOnly} // 是否只读
+        />
       )}
 
       <div className="pdf-annotation-content">
@@ -1216,8 +1201,82 @@ const PdfAnnotationExtension = ({
             <Document
               file={fileUrl}
               onLoadSuccess={handleDocumentLoadSuccess}
-              loading={<div className="pdf-loading">加载中...</div>}
-              error={<div className="pdf-error">加载PDF失败</div>}
+              loading={
+                <div
+                  className="pdf-loading"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '40px',
+                  }}
+                >
+                  <div style={{ marginBottom: '16px' }}>
+                    <svg
+                      viewBox="0 0 1024 1024"
+                      width="48"
+                      height="48"
+                      fill="#1677ff"
+                    >
+                      <path d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32zm-40 728H184V184h656v656z"></path>
+                      <path d="M304 544h416c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H304c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8zm0-144h416c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H304c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8zm0 288h416c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H304c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8z"></path>
+                    </svg>
+                  </div>
+                  <div
+                    style={{
+                      color: 'rgba(0, 0, 0, 0.85)',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      textAlign: 'center',
+                    }}
+                  >
+                    正在加载PDF文件，请稍候...
+                  </div>
+                </div>
+              }
+              error={
+                <div
+                  className="pdf-error"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '40px',
+                  }}
+                >
+                  <div style={{ marginBottom: '16px' }}>
+                    <svg
+                      viewBox="64 64 896 896"
+                      width="48"
+                      height="48"
+                      fill="#ff4d4f"
+                    >
+                      <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path>
+                      <path d="M464 688a48 48 0 1096 0 48 48 0 10-96 0zm24-112h48c4.4 0 8-3.6 8-8V296c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8z"></path>
+                    </svg>
+                  </div>
+                  <div
+                    style={{
+                      color: 'rgba(0, 0, 0, 0.85)',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                      marginBottom: '8px',
+                    }}
+                  >
+                    加载PDF失败
+                  </div>
+                  <div
+                    style={{
+                      color: 'rgba(0, 0, 0, 0.65)',
+                      fontSize: '14px',
+                    }}
+                  >
+                    请检查文件格式或网络连接后重试
+                  </div>
+                </div>
+              }
             >
               <Page
                 pageNumber={currentPage}

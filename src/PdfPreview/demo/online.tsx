@@ -24,6 +24,7 @@ export default () => {
         open={visible}
         onCancel={() => setVisible(false)}
         onClose={() => setVisible(false)}
+        onOk={() => setVisible(false)}
       >
         <PdfPreview fileUrl={fileUrl} style={{ height: 500 }} />
       </Modal>

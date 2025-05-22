@@ -1,9 +1,15 @@
 import { Button, ConfigProvider, Form, Popconfirm, Space } from 'antd';
-import { EditColumnsType, EditFormTable } from 'pangcg-components';
-import React from 'react';
+import {
+  EditColumnsType,
+  EditFormTable,
+  generateUUID,
+  useEditFormTable,
+} from 'pangcg-components';
+import React, { useEffect, useState } from 'react';
 
 // 配置 antd 的 国际化
 import zhCN from 'antd/locale/zh_CN';
+import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 
 interface PersonInfo {
@@ -18,6 +24,33 @@ interface PersonInfo {
 
 const EditFormTableDemo = () => {
   const [form] = Form.useForm();
+  // 添加选中行的状态管理
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const { deleteRecord, updateRecord, updateFormList, updateRecordField } =
+    useEditFormTable(form);
+
+  useEffect(() => {
+    // 给表格设置值
+    form.setFieldValue('list', [
+      {
+        id: '0000',
+        name: '小刚',
+        age: 32,
+        gender: 'male',
+        address: '西湖区湖底公园1号',
+        isMarried: true,
+      },
+      {
+        id: '11111',
+        name: '小理想',
+        age: 35,
+        gender: 'female',
+        address: '西湖区湖底公园1号',
+        isMarried: false,
+      },
+    ]);
+  }, []);
 
   // 定义列配置
   const columns: EditColumnsType<PersonInfo> = [
@@ -121,9 +154,9 @@ const EditFormTableDemo = () => {
       title: '操作',
       dataIndex: 'option',
       key: 'option',
-      width: 120,
+      width: 280,
       fixed: 'right',
-      customRender: ({ index }, form_s: any) => {
+      render: (value, record, index) => {
         return (
           <Space size="middle">
             <Popconfirm
@@ -131,15 +164,32 @@ const EditFormTableDemo = () => {
               okText="确定"
               cancelText="取消"
               onConfirm={() => {
-                const curList = form_s?.getFieldValue('list');
-                form_s.setFieldValue(
-                  'list',
-                  curList.filter((items: any, inx: number) => inx !== index),
-                );
+                deleteRecord('list', index);
               }}
             >
               <a>删除</a>
             </Popconfirm>
+            <a
+              onClick={() => {
+                updateRecordField('list', index, 'name', 9999);
+              }}
+            >
+              修改名称
+            </a>
+            <a
+              onClick={() => {
+                console.log('updateRecord', updateRecord);
+                updateFormList('list', index, {
+                  ...record,
+                  name: '张三',
+                  age: 9999,
+                  gender: 'male',
+                  bothday: dayjs(),
+                });
+              }}
+            >
+              修改当前行数据
+            </a>
           </Space>
         );
       },
@@ -151,54 +201,51 @@ const EditFormTableDemo = () => {
     console.log('values', values);
   };
 
+  // 多选功能相关配置
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      console.log('-newSelectedRowKeys--', newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
+
   return (
     <ConfigProvider locale={zhCN}>
-      <Button
-        type="primary"
-        onClick={() => {
-          form.submit();
-        }}
-        style={{ marginBottom: 12 }}
-      >
-        打印数据
-      </Button>
-      <Form form={form} onFinish={onFinish}>
-        <EditFormTable
-          formListProps={{ name: 'list' }}
-          recordCreatorProps={{
-            creatorButtonShow: true,
-            record: () => {
-              return {
-                name: '新记录',
-                gender: 'male',
-                age: '18',
-                id: (Math.random() * 10).toFixed(2),
-              };
-            },
-          }}
-          rowKey={'id'}
-          columns={columns}
-          dataSource={[
-            {
-              id: '0000',
-              name: '小刚',
-              age: 32,
-              gender: 'male',
-              address: '西湖区湖底公园1号',
-              isMarried: true,
-            },
-            {
-              id: '11111',
-              name: '小理想',
-              age: 35,
-              gender: 'female',
-              address: '西湖区湖底公园1号',
-              isMarried: false,
-            },
-          ]}
-          scroll={{ x: 'max-content' }}
-        />
-      </Form>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => {
+              form.submit();
+            }}
+          >
+            打印数据
+          </Button>
+        </Space>
+
+        <Form form={form} onFinish={onFinish}>
+          <EditFormTable
+            formListProps={{ name: 'list' }}
+            rowKey={'id'}
+            columns={columns}
+            scroll={{ x: 'max-content' }}
+            rowSelection={rowSelection}
+            recordCreatorProps={{
+              creatorButtonShow: true,
+              record: () => {
+                return {
+                  name: '新记录',
+                  gender: 'male',
+                  age: '18',
+                  // 新增数据，需要有和组件 rowKey 绑定相同的字段且赋值唯一 （这里也可以不写， 内部逻辑也动态给rowKey绑定属性设置了值）
+                  id: `add-${generateUUID()}`,
+                };
+              },
+            }}
+          />
+        </Form>
+      </Space>
     </ConfigProvider>
   );
 };

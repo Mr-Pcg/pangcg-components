@@ -13,11 +13,13 @@ import {
   TimePicker,
   TreeSelect,
 } from 'antd';
-import React, { FC, useEffect } from 'react';
+import { generateUUID } from 'pangcg-components';
+import React, { FC } from 'react';
 
 const { RangePicker } = DatePicker;
 
 // 内部资源
+import useEditFormTable from './hooks/useEditFormTable';
 import { ComponentProps, ComponentType, EditFormTableProps } from './types';
 
 /**
@@ -33,7 +35,7 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
       creatorButtonShow: false,
     },
     columns,
-    dataSource,
+    rowKey = 'id',
     ...rest
   } = props;
 
@@ -42,13 +44,6 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
 
   // 监听可编辑表格的数据
   // const formListWatch = Form.useWatch(formListProps.name, form)
-
-  // 初始化设置：表格 数据
-  useEffect(() => {
-    if (formListProps.name) {
-      form.setFieldValue(formListProps.name, dataSource || []);
-    }
-  }, [dataSource, formListProps]);
 
   /**
    * 根据不同 componentType 渲染不同的组件
@@ -181,6 +176,13 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
             <Table
               {...(rest || {})}
               columns={customColumns()}
+              // 使用rowKey作为行唯一标识
+              rowKey={(record) => {
+                const formListValues =
+                  form.getFieldValue(formListProps.name) || [];
+                const index = record.name;
+                return formListValues?.[index]?.[rowKey];
+              }}
               dataSource={fields} // 数据源
               pagination={false} // 可编辑表格，不允许分页
             />
@@ -196,7 +198,12 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
                     const addItem = recordCreatorProps?.record
                       ? recordCreatorProps?.record()
                       : {};
-                    add({ ...addItem });
+                    add({
+                      ...addItem,
+                      [rowKey]:
+                        addItem?.[rowKey]?.toString() ||
+                        `add-${generateUUID()}`,
+                    });
                   }}
                 >
                   {recordCreatorProps?.creatorButtonText || '新增一行'}
@@ -210,4 +217,7 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
   );
 };
 
+// 导出组件和自定义hooks
 export default EditFormTable;
+
+export { useEditFormTable };
