@@ -20,7 +20,8 @@ import {
   LineStyle,
   ShapeAnnotation,
   TextNoteAnnotation,
-} from '../types';
+} from '../../types';
+import './index.less';
 
 interface AnnotationLayerProps {
   pageNumber: number;

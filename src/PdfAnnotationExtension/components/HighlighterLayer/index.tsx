@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Highlighter from 'web-highlighter';
-import { Annotation, TextAnnotation } from '../types';
+import { Annotation, TextAnnotation } from '../../types';
+import './index.less';
 
 // 扩展web-highlighter类型以适合我们的使用场景
 interface HighlightSource {
