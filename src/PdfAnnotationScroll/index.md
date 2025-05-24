@@ -3,7 +3,7 @@ nav: 组件 #设置具体的导航栏
 group: #设置具体的菜单栏
   title: 文件预览 # 所在分组的名称
   order: 3 # 分组排序，值越小越靠前
-title: PdfAnnotationExtension #设置文件名称
+title: PdfAnnotationScroll #设置文件名称
 
 toc: content #在页面右侧展示锚点链接
 mobile: false
