@@ -1,0 +1,166 @@
+.annotation-list-container {
+  padding: 4px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.annotation-list-header {
+  margin: 8px 0 8px 0;
+  flex-shrink: 0;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+  }
+}
+
+.annotation-list-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 50px;
+  max-height: 100%;
+
+  /* 自定义滚动条样式 */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  .ant-empty {
+    margin: 40px 0;
+  }
+}
+
+.custom-annotation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 50px;
+  width: 100%;
+}
+
+.custom-annotation-item {
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  transition: all 0.3s;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+
+  &:hover {
+    background-color: #f9f9f9;
+    border-color: #e0e0e0;
+  }
+}
+
+.annotation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.annotation-type {
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.annotation-date {
+  color: #666;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.annotation-color-block {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.annotation-content {
+  margin: 6px 0;
+  color: #333;
+  font-size: 13px;
+  max-width: 100%;
+}
+
+.annotation-content-text {
+  display: inline-block;
+  max-width: 70%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  cursor: pointer;
+  border-bottom: 1px dashed #ccc;
+}
+
+.annotation-comment {
+  margin-top: 10px;
+
+  .ant-input {
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+    transition: all 0.3s;
+
+    &:hover,
+    &:focus {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+}
+
+.comment-form {
+  margin-top: 8px;
+}
+
+/* 批注高亮元素 - 选中效果 */
+.annotation-highlight-selected {
+  border: 3px solid rgba(255, 30, 30, 0.8) !important;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), inset 0 0 6px rgba(255, 0, 0, 0.3) !important;
+  animation: annotation-border-pulse 1.5s infinite alternate !important;
+  z-index: 100 !important;
+  pointer-events: none !important;
+  background-color: transparent !important;
+  box-sizing: border-box !important;
+}
+
+/* 批注高亮脉冲动画 - 边框和投影效果 */
+@keyframes annotation-border-pulse {
+  from {
+    border: 3px solid rgba(255, 30, 30, 0.8);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6),
+      inset 0 0 6px rgba(255, 0, 0, 0.3);
+  }
+  to {
+    border: 4px solid rgba(255, 30, 30, 0.6);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4),
+      inset 0 0 8px rgba(255, 0, 0, 0.2);
+  }
+}

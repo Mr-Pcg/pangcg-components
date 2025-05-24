@@ -9,7 +9,7 @@ toc: content #在页面右侧展示锚点链接
 mobile: false
 ---
 
-# PdfAnnotationExtension PDF 非滚动批注组件
+# PdfAnnotationScroll PDF 滚动批注组件
 
 PDF 批注组件用于在线预览 PDF 文件并添加多种类型的批注，支持高亮、删除线、下划线、矩形框、圆形、椭圆、自由绘制、自由高亮、签名和盖章等功能。
 
