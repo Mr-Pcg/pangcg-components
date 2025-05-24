@@ -37,6 +37,10 @@ PDF 批注组件用于在线预览 PDF 文件并添加多种类型的批注，�
 
 <code src="./demo/myPdfViewer.tsx"></code>
 
+### 只读 pdf 批注
+
+<code src="./demo/readOnly.tsx"></code>
+
 ## API 参数
 
 | 属性           | 说明                     | 类型                                                    | 默认值   |

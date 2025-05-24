@@ -37,7 +37,20 @@ const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   onLineStyleChange,
   readOnly = false,
 }) => {
-  if (readOnly) return null;
+  // 添加控制台日志，检查readOnly的值
+  const isReadOnly = Boolean(readOnly);
+  console.log(
+    'AnnotationToolbar接收到的readOnly:',
+    readOnly,
+    typeof readOnly,
+    'isReadOnly =',
+    isReadOnly,
+  );
+
+  if (isReadOnly) {
+    console.log('AnnotationToolbar 不渲染，因为 isReadOnly =', isReadOnly);
+    return null;
+  }
 
   // 预设颜色
   const presetColors = [

@@ -35,10 +35,7 @@ const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   onToolSelect,
   onColorChange,
   onLineStyleChange,
-  readOnly = false,
 }) => {
-  if (readOnly) return null;
-
   // 预设颜色
   const presetColors = [
     '#FFFF00', // 黄色

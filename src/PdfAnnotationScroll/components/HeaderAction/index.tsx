@@ -904,32 +904,32 @@ const HeaderAction: React.FC<HeaderActionProps> = ({
               <Button type="text" icon={<ZoomInOutlined />} onClick={zoomIn} />
             </div>
           </div>
-          {!readOnly && (
-            <div className="pdf-annotation-actions-save">
-              {/* 保存 */}
+          <div className="pdf-annotation-actions-save">
+            {/* 保存 */}
+            {!readOnly ? (
               <Button
                 icon={<SaveOutlined />}
                 type="text"
                 onClick={handleSaveAnnotations}
               />
+            ) : null}
 
-              {/* 下载 */}
-              <Button
-                style={{ marginLeft: 8 }}
-                icon={<DownloadOutlined />}
-                type="text"
-                onClick={() => handleDownloadPrintClick('download')}
-              />
+            {/* 下载 */}
+            <Button
+              style={{ marginLeft: 8 }}
+              icon={<DownloadOutlined />}
+              type="text"
+              onClick={() => handleDownloadPrintClick('download')}
+            />
 
-              {/* 打印 */}
-              <Button
-                style={{ marginLeft: 8 }}
-                icon={<PrinterOutlined />}
-                type="text"
-                onClick={() => handleDownloadPrintClick('print')}
-              />
-            </div>
-          )}
+            {/* 打印 */}
+            <Button
+              style={{ marginLeft: 8 }}
+              icon={<PrinterOutlined />}
+              type="text"
+              onClick={() => handleDownloadPrintClick('print')}
+            />
+          </div>
         </div>
       </div>
     </>

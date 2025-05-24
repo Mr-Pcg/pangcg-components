@@ -41,7 +41,7 @@ const Z_INDEX = {
 // 设置PDF.js worker路径
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
-export interface PdfAnnotationExtensionProps {
+export interface PdfAnnotationScrollProps {
   fileUrl: string | File | Blob;
   fileName?: string;
   readOnly?: boolean;
@@ -51,15 +51,16 @@ export interface PdfAnnotationExtensionProps {
   onSave?: (annotations: Annotation[], updatedPdf?: Blob | File) => void;
 }
 
-const PdfAnnotationExtension = ({
+const PdfAnnotationScroll = ({
   fileUrl,
   fileName,
-  onSave,
   readOnly = false,
   style = {},
   className = '',
   annotationList = [],
-}: PdfAnnotationExtensionProps): JSX.Element => {
+  onSave,
+}: PdfAnnotationScrollProps): JSX.Element => {
+  console.log('readOnly', readOnly);
   // PDF状态
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -566,7 +567,7 @@ const PdfAnnotationExtension = ({
       />
 
       {/* 工具栏 */}
-      {!readOnly && (
+      {!readOnly ? (
         <AnnotationToolbar
           activeTool={activeTool} // 当前选中的工具
           activeColor={activeColor} // 当前选中的颜色
@@ -574,9 +575,8 @@ const PdfAnnotationExtension = ({
           onToolSelect={handleToolSelect} // 工具选择
           onColorChange={setActiveColor} // 颜色选择
           onLineStyleChange={handleLineStyleChange} // 线型选择
-          readOnly={readOnly} // 是否只读
         />
-      )}
+      ) : null}
 
       <div className="pdf-annotation-content">
         {/* 左侧侧边栏 */}
@@ -750,4 +750,4 @@ const PdfAnnotationExtension = ({
   );
 };
 
-export default PdfAnnotationExtension;
+export default PdfAnnotationScroll;
