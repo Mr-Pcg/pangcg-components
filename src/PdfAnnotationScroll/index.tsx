@@ -60,7 +60,6 @@ const PdfAnnotationScroll = ({
   annotationList = [],
   onSave,
 }: PdfAnnotationScrollProps): JSX.Element => {
-  console.log('readOnly', readOnly);
   // PDF状态
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);

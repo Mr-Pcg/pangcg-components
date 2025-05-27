@@ -54,7 +54,6 @@ export default () => {
           cancelText="取消"
           open={visible}
           onCancel={() => setVisible(false)}
-          onClose={() => setVisible(false)}
           onOk={() => setVisible(false)}
         >
           <PdfPreview fileUrl={pdfFile} style={{ height: 500 }} />

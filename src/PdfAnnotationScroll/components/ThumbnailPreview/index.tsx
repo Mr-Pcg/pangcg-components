@@ -69,15 +69,11 @@ const ThumbnailPreview: React.FC<ThumbnailPreviewProps> = ({
   // 处理缩略图点击
   const handleThumbnailClick = useCallback(
     (pageNumber: number) => {
-      console.log('缩略图点击', { pageNumber, currentPage });
-
       if (pageNumber === currentPage) {
-        console.log('跳过相同页面');
         return;
       }
 
       // 调用页面切换回调
-      console.log('触发页面切换');
       onPageChange(pageNumber);
     },
     [currentPage, onPageChange],

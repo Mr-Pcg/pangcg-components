@@ -541,7 +541,7 @@ const HeaderAction: React.FC<HeaderActionProps> = ({
         message.error({ content: '生成批注PDF失败', key: 'downloadLoading' });
       }
     }).catch((error: any) => {
-      console.log('', error);
+      console.log('错误', error);
       message.error({ content: '捕获PDF失败', key: 'downloadLoading' });
     });
   };
