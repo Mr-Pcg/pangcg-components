@@ -3,6 +3,7 @@
 更新日志：
 
 - add [DragSortSingleTable] 新增 单层表格拖拽排序组件
+- add [DragSortTreeTable] 新增 树形表格拖拽排序组件
 - update [EditFormTable] 新增对 Cascader 组件的支持和新增 renderFormItem 对自定义子 Form.Item 子组件的支持
 - update [EditFormTreeTable] 新增对 Cascader 组件的支持和新增 renderFormItem 对自定义子 Form.Item 子组件的支持
 
