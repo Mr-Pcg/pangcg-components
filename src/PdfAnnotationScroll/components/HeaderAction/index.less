@@ -1,0 +1,96 @@
+.pdf-print-mask-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: white;
+  font-size: 16px;
+
+  .print-message {
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+
+  .print-progress {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+}
+
+.pdf-annotation-header-box {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: rgb(51, 51, 51);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 8px;
+  border-bottom: 1px solid #e8e8e8;
+  box-sizing: border-box;
+  overflow-x: auto;
+
+  .pdf-annotation-actions {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+
+    > * {
+      margin: 0 4px;
+    }
+
+    .pdf-annotation-actions-sidebar {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      .actions-sidebar-menu {
+        font-size: 16px;
+        color: #fff;
+      }
+    }
+
+    .pdf-annotation-actions-option {
+      display: flex;
+      align-items: center;
+
+      .pdf-annotation-actions-page {
+        margin-right: 10px;
+        color: #fff;
+      }
+
+      .pdf-annotation-actions-divider {
+        background: #fff;
+      }
+
+      .pdf-annotation-actions-zoom {
+        display: flex;
+        align-items: center;
+
+        .ant-btn {
+          color: #fff;
+        }
+
+        span {
+          margin: 0 8px;
+          color: #fff;
+        }
+      }
+    }
+
+    .pdf-annotation-actions-save {
+      display: flex;
+      align-items: center;
+
+      .ant-btn {
+        color: #fff;
+      }
+    }
+  }
+}

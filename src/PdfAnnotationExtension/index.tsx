@@ -405,7 +405,7 @@ const PdfAnnotationExtension = ({
       />
 
       {/* 工具栏 */}
-      {!readOnly && (
+      {!readOnly ? (
         <AnnotationToolbar
           activeTool={activeTool} // 当前选中的工具
           activeColor={activeColor} // 当前选中的颜色
@@ -415,7 +415,7 @@ const PdfAnnotationExtension = ({
           onLineStyleChange={handleLineStyleChange} // 线型选择
           readOnly={readOnly} // 是否只读
         />
-      )}
+      ) : null}
 
       <div className="pdf-annotation-content">
         {/* 左侧侧边栏 */}

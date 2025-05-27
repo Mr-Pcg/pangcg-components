@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Form, Popconfirm, Space } from 'antd';
+import { Button, ConfigProvider, Form, Popconfirm, Radio, Space } from 'antd';
 import {
   EditColumnsType,
   EditFormTable,
@@ -17,8 +17,8 @@ interface PersonInfo {
   name: string;
   age: number;
   gender: 'male' | 'female';
-  address: string;
   bothday: string;
+  health: 1 | 2;
   hireOrResignationDate: [string, string];
 }
 
@@ -27,8 +27,13 @@ const EditFormTableDemo = () => {
   // 添加选中行的状态管理
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const { deleteRecord, updateRecord, updateFormList, updateRecordField } =
-    useEditFormTable(form);
+  const {
+    // addRecord,
+    deleteRecord,
+    updateRecord,
+    updateFormList,
+    updateRecordField,
+  } = useEditFormTable(form);
 
   useEffect(() => {
     // 给表格设置值
@@ -38,19 +43,30 @@ const EditFormTableDemo = () => {
         name: '小刚',
         age: 32,
         gender: 'male',
-        address: '西湖区湖底公园1号',
         isMarried: true,
+        health: 1,
       },
       {
         id: '11111',
         name: '小理想',
         age: 35,
         gender: 'female',
-        address: '西湖区湖底公园1号',
         isMarried: false,
+        health: 2,
       },
     ]);
   }, []);
+
+  const newData = () => {
+    return {
+      id: `add-${generateUUID()}`, // 新增数据，需要有和组件 rowKey 绑定相同的字段且赋值唯一
+      name: '新记录',
+      gender: 'male',
+      age: '18',
+      health: 1,
+      bothday: dayjs(),
+    };
+  };
 
   // 定义列配置
   const columns: EditColumnsType<PersonInfo> = [
@@ -151,6 +167,25 @@ const EditFormTableDemo = () => {
       },
     },
     {
+      title: '健康情况',
+      dataIndex: 'health',
+      key: 'health',
+      width: 180,
+      formItemProps: {
+        rules: [{ required: true, message: '请选择健康情况' }],
+      },
+      renderFormItem: () => {
+        return (
+          <Radio.Group
+            options={[
+              { value: 1, label: '健康' },
+              { value: 2, label: '不健康' },
+            ]}
+          />
+        );
+      },
+    },
+    {
       title: '操作',
       dataIndex: 'option',
       key: 'option',
@@ -159,6 +194,13 @@ const EditFormTableDemo = () => {
       render: (value, record, index) => {
         return (
           <Space size="middle">
+            {/* <a
+              onClick={() => {
+                addRecord('list', { ...newData() });
+              }}
+            >
+              增加
+            </a> */}
             <Popconfirm
               title="确定要删除这条记录吗？"
               okText="确定"
@@ -231,16 +273,12 @@ const EditFormTableDemo = () => {
             columns={columns}
             scroll={{ x: 'max-content' }}
             rowSelection={rowSelection}
+            // 添加一行配置
             recordCreatorProps={{
               creatorButtonShow: true,
+              creatorButtonText: '添加一行数据',
               record: () => {
-                return {
-                  name: '新记录',
-                  gender: 'male',
-                  age: '18',
-                  // 新增数据，需要有和组件 rowKey 绑定相同的字段且赋值唯一 （这里也可以不写， 内部逻辑也动态给rowKey绑定属性设置了值）
-                  id: `add-${generateUUID()}`,
-                };
+                return { ...newData() };
               },
             }}
           />

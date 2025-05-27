@@ -1,17 +1,12 @@
 import { FormInstance } from 'antd';
-import { generateUUID } from 'pangcg-components';
 
 /**
  * 可编辑表格 自定义 hook
  * 提供操作表格的工具方法，用于在表格外部进行操作
  * @param formInstance form实例
- * @param rowKey table的rowKey属性，默认 id
  * @returns
  */
-const useEditFormTable = (
-  formInstance: FormInstance,
-  rowKey: string = 'id',
-) => {
+const useEditFormTable = (formInstance: FormInstance) => {
   // 获取 form 实例
   const form = formInstance;
 
@@ -24,8 +19,7 @@ const useEditFormTable = (
     // 获取当前表单列表数据
     const formListValues = form?.getFieldValue(formListName) || [];
     formListValues.push({
-      ...(record || {}),
-      [rowKey]: record?.[rowKey]?.toString() || `add-${generateUUID()}`,
+      ...record,
     });
     form.setFieldValue(formListName, formListValues);
   };

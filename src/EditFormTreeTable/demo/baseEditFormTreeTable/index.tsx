@@ -1,10 +1,10 @@
-import { Button, ConfigProvider, Form, Popconfirm, Space } from 'antd';
+import { Button, ConfigProvider, Form, Popconfirm, Radio, Space } from 'antd';
 import {
   EditFormTreeTable,
   EditTreeColumnsType,
   useEditFormTreeTable,
 } from 'pangcg-components';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // 配置 antd 的 国际化
 import zhCN from 'antd/locale/zh_CN';
@@ -22,6 +22,13 @@ interface DepartmentInfo {
 const EditFormTreeTableDemo = () => {
   const [form] = Form.useForm();
   const { addChildRecord, deleteRecord } = useEditFormTreeTable(form);
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    form.setFieldValue('departments', [...treeData]);
+  }, []);
 
   // 定义列配置
   const columns: EditTreeColumnsType<DepartmentInfo> = [
@@ -118,12 +125,31 @@ const EditFormTreeTableDemo = () => {
       },
     },
     {
+      title: '投诉情况',
+      dataIndex: 'complaint',
+      key: 'complaint',
+      width: 120,
+      formItemProps: {
+        rules: [{ required: true, message: '请选择投诉情况' }],
+      },
+      renderFormItem: () => {
+        return (
+          <Radio.Group
+            options={[
+              { value: 1, label: '有投诉' },
+              { value: 2, label: '无投诉' },
+            ]}
+          />
+        );
+      },
+    },
+    {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
       width: 180,
       fixed: 'right',
-      customRender: ({ record }) => {
+      render: (value, record: any) => {
         return (
           <Space size="middle">
             <a
@@ -165,6 +191,7 @@ const EditFormTreeTableDemo = () => {
       status: true,
       level: 1,
       code: '100000',
+      complaint: 2,
       children: [
         {
           id: '1-1',
@@ -174,6 +201,7 @@ const EditFormTreeTableDemo = () => {
           status: false,
           level: 2,
           code: '100001',
+          complaint: 1,
           children: [
             {
               id: '1-1-1',
@@ -183,6 +211,7 @@ const EditFormTreeTableDemo = () => {
               status: true,
               level: 3,
               code: '100001-1',
+              complaint: 2,
             },
             {
               id: '1-1-2',
@@ -192,6 +221,7 @@ const EditFormTreeTableDemo = () => {
               status: true,
               level: 3,
               code: '100001-2',
+              complaint: 1,
             },
           ],
         },
@@ -203,6 +233,7 @@ const EditFormTreeTableDemo = () => {
           status: true,
           level: 2,
           code: '100002',
+          complaint: 1,
         },
       ],
     },
@@ -211,6 +242,16 @@ const EditFormTreeTableDemo = () => {
   // form提交事件
   const onFinish = (values: any) => {
     console.log('提交的数据:', values);
+  };
+
+  // 多选功能相关配置
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      console.log('-newSelectedRowKeys--', newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+    checkStrictly: false,
   };
 
   return (
@@ -228,6 +269,10 @@ const EditFormTreeTableDemo = () => {
         <EditFormTreeTable
           key="tree-table"
           formListProps={{ name: 'departments' }}
+          rowKey="id"
+          columns={columns}
+          scroll={{ x: 'max-content' }}
+          rowSelection={rowSelection}
           recordCreatorProps={{
             creatorButtonShow: true,
             creatorButtonText: '添加根数据',
@@ -238,12 +283,10 @@ const EditFormTreeTableDemo = () => {
                 manager: '未指定',
                 level: 1,
                 status: true,
+                complaint: 2,
               };
             },
           }}
-          columns={columns}
-          dataSource={treeData}
-          scroll={{ x: 'max-content' }}
         />
       </Form>
     </ConfigProvider>

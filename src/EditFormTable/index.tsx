@@ -1,6 +1,7 @@
 // 外部资源
 import {
   Button,
+  Cascader,
   Checkbox,
   DatePicker,
   Form,
@@ -86,6 +87,8 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
         return (
           <TreeSelect {...(componentProps as ComponentProps<'treeSelect'>)} />
         );
+      case 'cascader':
+        return <Cascader {...(componentProps as ComponentProps<'cascader'>)} />;
       default:
         return null;
     }
@@ -105,11 +108,12 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
         componentType = 'text',
         componentProps,
         formItemProps,
+        renderFormItem = undefined,
       } = columnItem;
 
       return {
         ...columnItem,
-        render: (text: string, record: any, inx: number) => {
+        render: (text: any, record: any, inx: number) => {
           // 获取当前数据
           const curRecord = formListValues?.[inx] || {};
 
@@ -132,36 +136,44 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
             );
           } else {
             // 根据 componentType 渲染
-            if (componentType === 'text') {
+
+            // 渲染： 表单元素 和 自定义Form.Item子组件
+            if (
+              componentType !== 'text' ||
+              renderFormItem instanceof Function
+            ) {
+              // 子节点的值的属性: 默认 value
+              const valuePropName =
+                formItemProps?.valuePropName ||
+                (() => {
+                  switch (componentType) {
+                    case 'switch':
+                    case 'checkbox':
+                      return 'checked';
+                    default:
+                      return 'value';
+                  }
+                })();
+
+              return (
+                <Form.Item
+                  {...formItemProps}
+                  valuePropName={valuePropName}
+                  name={[inx, dataIndex]}
+                  style={{ marginBottom: 0 }}
+                >
+                  {renderFormItem && renderFormItem instanceof Function
+                    ? renderFormItem()
+                    : renderComponent(
+                        componentType,
+                        componentProps as ComponentProps<ComponentType>,
+                      )}
+                </Form.Item>
+              );
+            } else if (componentType === 'text') {
+              // 渲染：文本
               return curRecord?.[dataIndex]?.toString() || '';
             }
-
-            // 子节点的值的属性: 默认 value
-            const valuePropName =
-              formItemProps?.valuePropName ||
-              (() => {
-                switch (componentType) {
-                  case 'switch':
-                  case 'checkbox':
-                    return 'checked';
-                  default:
-                    return 'value';
-                }
-              })();
-
-            return (
-              <Form.Item
-                {...formItemProps}
-                valuePropName={valuePropName}
-                name={[inx, dataIndex]}
-                style={{ marginBottom: 0 }}
-              >
-                {renderComponent(
-                  componentType,
-                  componentProps as ComponentProps<ComponentType>,
-                )}
-              </Form.Item>
-            );
           }
         },
       };
@@ -200,7 +212,7 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
                       : {};
                     add({
                       ...addItem,
-                      [rowKey]:
+                      [`${rowKey}`]:
                         addItem?.[rowKey]?.toString() ||
                         `add-${generateUUID()}`,
                     });

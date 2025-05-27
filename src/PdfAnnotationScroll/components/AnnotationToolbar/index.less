@@ -1,0 +1,103 @@
+.annotation-toolbar-box {
+  height: 68px;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #f9f9f9;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow-x: auto;
+
+  .annotation-tools {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+
+  .tool-group {
+    display: flex;
+    gap: 8px;
+    margin: 0 4px;
+    align-items: flex-start;
+  }
+
+  .tool-divider {
+    height: 50px;
+    margin: 0 6px;
+  }
+
+  .tool-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .tool-name {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #666;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  .annotation-tool-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      color: #1890ff;
+      border-color: #1890ff;
+    }
+
+    &.active {
+      color: #1890ff;
+      border-color: #1890ff;
+      background-color: #e6f7ff;
+    }
+
+    &.disabled {
+      color: #ccc;
+      border-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  .color-picker {
+    border-radius: 4px;
+
+    .ant-color-picker-trigger {
+      min-width: auto;
+      width: auto;
+      height: 28px;
+      border-radius: 4px;
+    }
+
+    &.ant-color-picker-popup {
+      min-width: 224px;
+    }
+  }
+
+  /* 响应式样式 */
+  @media (max-width: 768px) {
+    .annotation-toolbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .color-picker {
+      margin-left: 0;
+      margin-top: 8px;
+    }
+  }
+}

@@ -21,7 +21,6 @@ import {
   ShapeAnnotation,
   TextNoteAnnotation,
 } from '../../types';
-import './index.less';
 
 interface AnnotationLayerProps {
   pageNumber: number;

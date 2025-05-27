@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import { cloneDeep } from 'lodash';
 import { generateUUID } from 'pangcg-components';
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 // 内部类型定义
 import { StoreValue } from 'antd/es/form/interface';
 import useEditFormTreeTable from './hooks/useEditFormTreeTable';
@@ -39,38 +39,12 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
       creatorButtonShow: false,
     },
     columns,
-    dataSource,
     rowKey = 'id',
     ...rest
   } = props;
 
   // 获取 form 实例
   const form = Form.useFormInstance();
-
-  // 初始化设置：表格 数据
-  useEffect(() => {
-    if (formListProps.name && dataSource) {
-      // 递归给数据源设置唯一标识 _key，绑定到 Table 的rowKey
-      const recursionDataSource = (dataList: any[]) => {
-        dataList.forEach((item) => {
-          // 设置唯一标识 _key， 默认赋值使用rowKey属性对应的值
-          item._key = item?.[rowKey]?.toString() || generateUUID();
-          if (Array.isArray(item?.children) && item?.children?.length) {
-            recursionDataSource(item.children);
-          } else {
-            item.children = null;
-          }
-        });
-      };
-      const cloneDataSource = Array.isArray(dataSource)
-        ? cloneDeep(dataSource)
-        : [];
-      recursionDataSource(cloneDataSource);
-
-      // 设置表单数据
-      form?.setFieldValue(formListProps.name, cloneDataSource || []);
-    }
-  }, [dataSource, formListProps]); // form
 
   /**
    * 根据不同 componentType 渲染不同的组件
@@ -126,12 +100,13 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
     // 获取可编辑表格的数据
     // const formListValues = form.getFieldValue(formListProps.name) || [];
 
-    return columns.map((columnItem: any) => {
+    return columns.map((columnItem) => {
       const {
         dataIndex,
         componentType = 'text',
         componentProps,
         formItemProps,
+        renderFormItem = undefined,
       } = columnItem;
 
       return {
@@ -159,36 +134,41 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
             );
           } else {
             // 根据 componentType 渲染
-            if (componentType === 'text') {
+            if (
+              componentType !== 'text' ||
+              renderFormItem instanceof Function
+            ) {
+              // 子节点的值的属性: 默认 value
+              const valuePropName =
+                formItemProps?.valuePropName ||
+                (() => {
+                  switch (componentType) {
+                    case 'switch':
+                    case 'checkbox':
+                      return 'checked';
+                    default:
+                      return 'value';
+                  }
+                })();
+
+              return (
+                <Form.Item
+                  {...formItemProps}
+                  valuePropName={valuePropName}
+                  name={[...record.fieldKey!, dataIndex]}
+                  style={{ marginBottom: 0 }}
+                >
+                  {renderFormItem && renderFormItem instanceof Function
+                    ? renderFormItem()
+                    : renderComponent(
+                        componentType,
+                        componentProps as ComponentProps<ComponentType>,
+                      )}
+                </Form.Item>
+              );
+            } else if (componentType === 'text') {
               return curRecord?.[dataIndex]?.toString() || '';
             }
-
-            // 子节点的值的属性: 默认 value
-            const valuePropName =
-              formItemProps?.valuePropName ||
-              (() => {
-                switch (componentType) {
-                  case 'switch':
-                  case 'checkbox':
-                    return 'checked';
-                  default:
-                    return 'value';
-                }
-              })();
-
-            return (
-              <Form.Item
-                {...formItemProps}
-                valuePropName={valuePropName}
-                name={[...record.fieldKey!, dataIndex]}
-                style={{ marginBottom: 0 }}
-              >
-                {renderComponent(
-                  componentType,
-                  componentProps as ComponentProps<ComponentType>,
-                )}
-              </Form.Item>
-            );
           }
         },
       };
@@ -202,33 +182,41 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
   const handleAddRootRecord = (
     add: (defaultValue?: StoreValue, insertIndex?: number) => void,
   ) => {
-    const creatorProps_record = recordCreatorProps?.record
-      ? recordCreatorProps?.record()
-      : {};
-    const newRecord = recordCreatorProps?.record
-      ? {
-          ...creatorProps_record,
-          children:
-            Array.isArray(creatorProps_record?.children) &&
-            creatorProps_record?.children?.length
-              ? creatorProps_record.children
-              : null,
-          _key: generateUUID(),
-        }
-      : { _key: generateUUID(), children: null };
+    const { record } = recordCreatorProps;
+    const creatorProps_record =
+      record && record instanceof Function
+        ? record()
+        : { [`${rowKey}`]: `add-${generateUUID()}`, children: null };
+
+    const newRecord = {
+      ...creatorProps_record,
+      [`${rowKey}`]:
+        creatorProps_record?.[rowKey]?.toString() || `add-${generateUUID()}`,
+      children: null,
+    };
 
     add({ ...newRecord });
   };
 
-  // 树形可编辑表格
+  // 设置：树形可编辑表格
   const transformData = useCallback(
     (data: any[], parentKey: (string | number)[] = []): any[] => {
       return data?.map((field, index) => {
+        // 和 Form.Item 的name相关
         const fieldKey = [...parentKey, index];
+
+        // 获取当前数据
         const currentData = form.getFieldValue([
           formListProps.name,
           ...fieldKey,
         ]);
+
+        // 添加 _key 属性，方便 useEditFormTreeTable 的api使用
+        // 默认： 1.rowKey的字段对应的值； 2.自身_key的值； 3.生成随机数
+        currentData._key =
+          currentData?.[rowKey]?.toString() ||
+          currentData._key ||
+          `add-${generateUUID()}`;
 
         return {
           ...currentData,
@@ -255,7 +243,7 @@ const EditFormTreeTable: FC<EditFormTreeTableProps> = (props) => {
               {...(rest || {})}
               dataSource={transformData(fields)} // 数据源
               columns={customColumns()}
-              rowKey={(record) => record._key} // 使用_key作为行唯一标识
+              rowKey={(record) => record?._key} // 绑定_key对应的字段
               pagination={false} // 可编辑表格，不允许分页
             />
             {/* 添加根节点 */}

@@ -7,7 +7,7 @@ import {
   ZoomInOutlined,
   ZoomOutOutlined,
 } from '@ant-design/icons';
-import { Button, message, Modal } from 'antd';
+import { Button, Divider, message, Modal } from 'antd';
 import React, { useState } from 'react';
 import { Annotation } from '../../types';
 import './index.less';
@@ -705,23 +705,29 @@ const HeaderAction: React.FC<HeaderActionProps> = ({
             onClick={() => toggleSidebar(!sidebarVisible)}
           >
             {sidebarVisible ? (
-              <MenuFoldOutlined style={{ fontSize: 20 }} />
+              <MenuFoldOutlined className="actions-sidebar-menu" />
             ) : (
-              <MenuUnfoldOutlined style={{ fontSize: 20 }} />
+              <MenuUnfoldOutlined className="actions-sidebar-menu" />
             )}
           </div>
           <div className="pdf-annotation-actions-option">
             <div className="pdf-annotation-actions-page">
-              <span
-                style={{ margin: '0 8px', minWidth: 32 }}
-              >{`${currentPage} / ${numPages}`}</span>
+              {`${currentPage} / ${numPages}`}
             </div>
+            <Divider
+              type="vertical"
+              className="pdf-annotation-actions-divider"
+            />
             <div className="pdf-annotation-actions-zoom">
-              <Button icon={<ZoomOutOutlined />} onClick={zoomOut} />
+              <Button
+                type="text"
+                icon={<ZoomOutOutlined />}
+                onClick={zoomOut}
+              />
               <span style={{ margin: '0 8px' }}>
                 {Math.round(scale * 100)}%
               </span>
-              <Button icon={<ZoomInOutlined />} onClick={zoomIn} />
+              <Button type="text" icon={<ZoomInOutlined />} onClick={zoomIn} />
             </div>
           </div>
           {!readOnly && (
@@ -729,7 +735,7 @@ const HeaderAction: React.FC<HeaderActionProps> = ({
               {/* 保存 */}
               <Button
                 icon={<SaveOutlined />}
-                type="primary"
+                type="text"
                 onClick={handleSaveAnnotations}
               />
 
@@ -737,7 +743,7 @@ const HeaderAction: React.FC<HeaderActionProps> = ({
               <Button
                 style={{ marginLeft: 8 }}
                 icon={<DownloadOutlined />}
-                type="primary"
+                type="text"
                 onClick={() => handleDownloadPrintClick('download')}
               />
 
@@ -745,7 +751,7 @@ const HeaderAction: React.FC<HeaderActionProps> = ({
               <Button
                 style={{ marginLeft: 8 }}
                 icon={<PrinterOutlined />}
-                type="primary"
+                type="text"
                 onClick={() => handleDownloadPrintClick('print')}
               />
             </div>
