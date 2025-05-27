@@ -20,7 +20,8 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 ## 注意事项
 
 1. 暂时不支持树形数据结构的表格编辑
-2. EditFormTable 组件的 rowKey 要和 useEditFormTable 的第二个参数的 rowKey 保持一致， 默认 id 字段
+2. EditFormTable 组件的内部【新增一行】的 recordCreatorProps 的 render 返回的数据中需要存在和 rowKey 绑定的字段值，全局唯一
+3. 使用 useEditFormTable 的 addRecord 方法【添加一行】，第二个参数需要存在和 rowKey 绑定的字段值，全局唯一
 
 ## 代码演示
 
@@ -28,7 +29,7 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 
 ## API
 
-### EditFormTable
+## EditFormTable
 
 | 参数               | 说明                               | 类型                                           | 默认值 | 版本  |
 | ------------------ | ---------------------------------- | ---------------------------------------------- | ------ | ----- |
@@ -48,11 +49,14 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 
 ## CustomColumns 参数
 
-| 参数           | 说明                                           | 类型                                 | 默认值 | 版本  |
-| -------------- | ---------------------------------------------- | ------------------------------------ | ------ | ----- |
-| componentType  | 组件类型                                       | [ComponentType](#componenttype-参数) | `text` | 0.0.1 |
-| componentProps | 组件类型对应的属性（继承 Antd 对应的组件属性） | `-`                                  | `-`    | 0.0.1 |
-| formItemProps  | 继承 Antd 的 formItemProps                     | `-`                                  | `-`    | 0.0.1 |
+| 参数           | 说明                                           | 类型                                           | 默认值    | 版本  |
+| -------------- | ---------------------------------------------- | ---------------------------------------------- | --------- | ----- |
+| componentType  | 组件类型                                       | [ComponentType](#componenttype-参数)           | `text`    | 0.0.1 |
+| componentProps | 组件类型对应的属性（继承 Antd 对应的组件属性） | `-`                                            | `-`       | 0.0.1 |
+| formItemProps  | 继承 Antd 的 formItemProps                     | `-`                                            | `-`       | 0.0.1 |
+| customRender   | 自定义渲染函数                                 | `({ text, record, index }, form) => ReactNode` | `-`       | 0.0.1 |
+| renderFormItem | 渲染 Form.Item 子元素                          | () => React.ReactNode                          | undefined | 0.0.5 |
+| otherProps     | 继承 antd 的 columns                           | `-`                                            | -         | 0.0.1 |
 
 ## ComponentType 参数
 
@@ -69,6 +73,7 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 | switch      | 开关           | `SwitchProps`      | `-`    | 0.0.1 |
 | timePicker  | 时间选择器     | `TimePickerProps`  | `-`    | 0.0.1 |
 | treeSelect  | 树选择器       | `TreeSelectProps`  | `-`    | 0.0.1 |
+| cascader    | 级联选择       | `CascaderProps`    | `-`    | 0.0.5 |
 
 ## useEditFormTable 自定义 hooks
 

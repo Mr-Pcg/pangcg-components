@@ -1,5 +1,6 @@
 import type {
   ButtonProps,
+  CascaderProps,
   CheckboxProps,
   DatePickerProps,
   FormItemProps,
@@ -36,7 +37,7 @@ export interface IFormListProps {
  */
 export interface CreatorRecordProps {
   id?: string; // 默认存在id，绑定到Table的rowKey
-  [key: string]: string | undefined;
+  [key: string | number]: any;
 }
 
 /**
@@ -90,7 +91,9 @@ export type ComponentType =
   | 'radio'
   | 'switch'
   | 'timePicker'
-  | 'treeSelect';
+  | 'treeSelect'
+  | 'cascader'
+  | undefined;
 
 /**
  * 根据组件类型获取对应的Props类型
@@ -116,6 +119,8 @@ export type ComponentProps<T extends ComponentType> = T extends 'input'
   ? TimePickerProps
   : T extends 'treeSelect'
   ? TreeSelectProps<any>
+  : T extends 'cascader'
+  ? CascaderProps<any>
   : T extends 'text'
   ? Record<string, never>
   : never;
@@ -127,12 +132,19 @@ export type ComponentProps<T extends ComponentType> = T extends 'input'
 export type EditColumnsType<T = any> = Array<
   ColumnsType<T>[0] & {
     dataIndex: string;
+
     /** 列使用的组件类型 */
     componentType?: ComponentType;
+
     /** 组件的属性配置 */
     componentProps?: ComponentProps<ComponentType>;
+
     /** 表单项的属性配置 */
     formItemProps?: FormItemProps;
+
+    /** 自定义 Form.Item 渲染 */
+    renderFormItem?: (() => React.ReactNode | null) | undefined;
+
     /** 自定义渲染函数 */
     customRender?: (
       { text, record, index }: { text: string; record: any; index: number },
@@ -168,5 +180,5 @@ export interface EditFormTableProps<T = any> extends EditTableProps<T> {
   /**
    * 表格的row_key
    */
-  rowKey: string | undefined;
+  rowKey: string;
 }

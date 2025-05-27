@@ -599,7 +599,7 @@ const HighlighterLayer: React.FC<HighlighterLayerProps> = ({
         pointerEvents: readOnly ? 'none' : 'auto',
         zIndex: zIndex,
       }}
-      className="highlighter-layer"
+      className="highlighter-layer-box"
     >
       {/* 文本选择捕获层 */}
       <div

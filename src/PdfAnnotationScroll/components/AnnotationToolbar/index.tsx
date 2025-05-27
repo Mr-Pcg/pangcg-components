@@ -56,7 +56,7 @@ const AnnotationToolbar: React.FC<AnnotationToolbarProps> = ({
   };
 
   return (
-    <div className="annotation-toolbar">
+    <div className="annotation-toolbar-box">
       <div className="annotation-tools">
         {/* 文本批注工具组 */}
         <div className="tool-group">

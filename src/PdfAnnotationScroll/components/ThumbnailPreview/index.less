@@ -1,4 +1,4 @@
-.thumbnail-preview {
+.thumbnail-preview-box {
   padding: 16px 0 16px 16px;
   display: flex;
   flex-direction: column;
@@ -72,41 +72,41 @@
       }
     }
   }
-}
 
-.thumbnail-loading,
-.thumbnail-error {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  color: #666;
-  font-size: 14px;
-  text-align: center;
-}
-
-/* 定制react-pdf组件在缩略图中的样式 */
-.thumbnail-container {
-  .react-pdf__Document {
-    width: 100%;
-  }
-
-  .react-pdf__Page {
-    margin: 0;
+  .thumbnail-loading,
+  .thumbnail-error {
     display: flex;
     justify-content: center;
     align-items: center;
-
-    .react-pdf__Page__canvas {
-      margin: 0 auto;
-      max-width: 100% !important;
-      height: auto !important;
-      box-shadow: none;
-    }
+    padding: 20px;
+    color: #666;
+    font-size: 14px;
+    text-align: center;
   }
 
-  /* 隐藏加载中文本 */
-  .react-pdf__message {
-    display: none;
+  /* 定制react-pdf组件在缩略图中的样式 */
+  .thumbnail-container {
+    .react-pdf__Document {
+      width: 100%;
+    }
+
+    .react-pdf__Page {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .react-pdf__Page__canvas {
+        margin: 0 auto;
+        max-width: 100% !important;
+        height: auto !important;
+        box-shadow: none;
+      }
+    }
+
+    /* 隐藏加载中文本 */
+    .react-pdf__message {
+      display: none;
+    }
   }
 }

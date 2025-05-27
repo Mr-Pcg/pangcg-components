@@ -43,7 +43,6 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 | formListProps      | Form.List 的属性           | `IFormListProps`     | -                              |
 | recordCreatorProps | 添加行的配置               | `RecordCreatorProps` | `{ creatorButtonShow: false }` |
 | columns            | 表格列的配置描述           | `EditColumnsType[]`  | -                              |
-| dataSource         | 数据数组                   | `object[]`           | -                              |
 | otherProps         | 其余参数继承 antd 的 Table | -                    | -                              |
 
 ### IFormListProps
@@ -65,14 +64,14 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 
 ### columns
 
-| 参数           | 说明                       | 类型                                           | 默认值 |
-| -------------- | -------------------------- | ---------------------------------------------- | ------ |
-| title          | 列头显示文字               | `ReactNode`                                    | -      |
-| dataIndex      | 列数据在数据项中对应的路径 | `string`                                       | -      |
-| componentType  | 编辑组件类型               | [ComponentType](#componenttype)                | `text` |
-| componentProps | 编辑组件属性               | `ComponentProps<ComponentType>`                | -      |
-| formItemProps  | Form.Item 的属性           | `FormItemProps`                                | -      |
-| customRender   | 自定义渲染函数             | `({ text, record, index }, form) => ReactNode` | -      |
+| 参数           | 说明                  | 类型                                           | 默认值 | 版本  |
+| -------------- | --------------------- | ---------------------------------------------- | ------ | ----- |
+| componentType  | 编辑组件类型          | [ComponentType](#componenttype)                | `text` | 0.0.1 |
+| componentProps | 编辑组件属性          | `ComponentProps<ComponentType>`                | -      | 0.0.1 |
+| formItemProps  | Form.Item 的属性      | `FormItemProps`                                | -      | 0.0.1 |
+| renderFormItem | 渲染 Form.Item 子元素 | () => React.ReactNode                          | -      | 0.0.5 |
+| customRender   | 自定义渲染函数        | `({ text, record, index }, form) => ReactNode` | -      | 0.0.1 |
+| otherProps     | 继承 antd 的 columns  | `-`                                            | -      | 0.0.1 |
 
 ### ComponentType
 

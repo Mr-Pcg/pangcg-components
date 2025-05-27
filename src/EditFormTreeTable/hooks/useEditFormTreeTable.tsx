@@ -19,7 +19,7 @@ const useEditFormTreeTable = (formInstance: FormInstance) => {
   const addRootRecord = (formListName: string, record?: object) => {
     // 获取当前表单列表的值
     const formListValues = form?.getFieldValue(formListName) || [];
-    formListValues.push({ ...(record || {}), _key: generateUUID() });
+    formListValues.push({ ...(record || {}), _key: 'add-' + generateUUID() });
     form.setFieldValue(formListName, formListValues);
   };
 

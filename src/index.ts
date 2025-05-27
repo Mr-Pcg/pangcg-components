@@ -10,6 +10,10 @@ export {
 } from './EditFormTreeTable';
 export type { EditTreeColumnsType } from './EditFormTreeTable/types';
 
+// 导出：基于dnd-kit的拖拽排序表格组件
+// export { default as DragSortSingleTable } from './DragSortSingleTable';
+// export type { DndKitSortTableProps } from './DragSortSingleTable/types';
+
 // 导出：ErrorBoundary组件
 export { default as ErrorBoundary, useErrorBoundary } from './ErrorBoundary';
 

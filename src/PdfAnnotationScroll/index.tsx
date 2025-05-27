@@ -544,7 +544,7 @@ const PdfAnnotationScroll = ({
 
   return (
     <div
-      className={`pdf-annotation-container ${className}`}
+      className={`pdf-annotation-container-box ${className}`}
       style={style}
       ref={containerRef}
     >

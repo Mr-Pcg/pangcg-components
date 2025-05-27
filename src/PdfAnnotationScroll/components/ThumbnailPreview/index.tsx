@@ -169,7 +169,7 @@ const ThumbnailPreview: React.FC<ThumbnailPreviewProps> = ({
   };
 
   return (
-    <div className="thumbnail-preview">
+    <div className="thumbnail-preview-box">
       <Document
         file={fileUrl}
         onLoadSuccess={handleDocumentLoadSuccess}

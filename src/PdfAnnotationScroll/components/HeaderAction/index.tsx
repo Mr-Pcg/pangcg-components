@@ -864,14 +864,14 @@ const HeaderAction: React.FC<HeaderActionProps> = ({
     <>
       {/* 打印 和 下载有批注的pdf 过程中的遮罩层 */}
       {isPrinting && (
-        <div className="pdf-print-mask">
+        <div className="pdf-print-mask-box">
           <div className="print-message">
             正在处理PDF文件，请勿关闭或操作页面
           </div>
           <div className="print-progress">{printProgress}</div>
         </div>
       )}
-      <div className="pdf-annotation-header">
+      <div className="pdf-annotation-header-box">
         <div className="pdf-annotation-actions">
           <div
             className="pdf-annotation-actions-sidebar"

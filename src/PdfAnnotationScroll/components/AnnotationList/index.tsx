@@ -236,7 +236,7 @@ const AnnotationList: React.FC<AnnotationListProps> = ({
   };
 
   return (
-    <div className="annotation-list-container">
+    <div className="annotation-list-container-box">
       <div className="annotation-list-header">
         <h4 style={{ margin: 0 }}>批注列表 (第 {currentPage} 页)</h4>
       </div>

@@ -2,9 +2,10 @@ import { Button, ConfigProvider, Form, Popconfirm, Space } from 'antd';
 import {
   EditFormTreeTable,
   EditTreeColumnsType,
+  generateUUID,
   useEditFormTreeTable,
 } from 'pangcg-components';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // 配置 antd 的 国际化
 import zhCN from 'antd/locale/zh_CN';
@@ -23,6 +24,11 @@ const EditFormTreeTableDemo = () => {
   const [form] = Form.useForm();
   const { addRootRecord, addChildRecord, deleteRecord, updateRecord } =
     useEditFormTreeTable(form);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    form.setFieldValue('departments', [...treeData]);
+  }, []);
 
   // 定义列配置
   const columns: EditTreeColumnsType<DepartmentInfo> = [
@@ -246,6 +252,7 @@ const EditFormTreeTableDemo = () => {
             manager: '未指定',
             level: 1,
             status: true,
+            id: 'add-' + generateUUID(), // 应为 rowKey="id" 所以需要声明唯一的id值
           });
         }}
         style={{ marginBottom: 12, marginLeft: 12 }}
@@ -255,9 +262,9 @@ const EditFormTreeTableDemo = () => {
       <Form form={form} onFinish={onFinish}>
         <EditFormTreeTable
           key="tree-table"
+          rowKey="id"
           formListProps={{ name: 'departments' }}
           columns={columns}
-          dataSource={treeData}
           scroll={{ x: 'max-content' }}
         />
       </Form>
