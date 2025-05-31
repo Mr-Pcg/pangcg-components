@@ -38,12 +38,13 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 
 ### EditFormTreeTable
 
-| 参数               | 说明                       | 类型                 | 默认值                         |
-| ------------------ | -------------------------- | -------------------- | ------------------------------ |
-| formListProps      | Form.List 的属性           | `IFormListProps`     | -                              |
-| recordCreatorProps | 添加行的配置               | `RecordCreatorProps` | `{ creatorButtonShow: false }` |
-| columns            | 表格列的配置描述           | `EditColumnsType[]`  | -                              |
-| otherProps         | 其余参数继承 antd 的 Table | -                    | -                              |
+| 参数               | 说明             | 类型                                | 默认值                         |
+| ------------------ | ---------------- | ----------------------------------- | ------------------------------ |
+| formListProps      | Form.List 的属性 | `IFormListProps`                    | -                              |
+| recordCreatorProps | 添加行的配置     | `RecordCreatorProps`                | `{ creatorButtonShow: false }` |
+| columns            | 表格列的配置描述 | [EditColumnsType](#editcolumnstype) | -                              |
+
+除了以上属性外，该组件还支持 Ant Design Table 组件的所有属性。
 
 ### IFormListProps
 
@@ -62,7 +63,7 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 | record            | 初始化新行数据的方法 | `() => Record<string, any>` | -                                 |
 | buttonProps       | 按钮的属性           | `ButtonProps`               | `{ type: 'dashed', block: true }` |
 
-### columns
+### EditColumnsType
 
 | 参数           | 说明                  | 类型                                           | 默认值 | 版本  |
 | -------------- | --------------------- | ---------------------------------------------- | ------ | ----- |
@@ -71,7 +72,8 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 | formItemProps  | Form.Item 的属性      | `FormItemProps`                                | -      | 0.0.1 |
 | renderFormItem | 渲染 Form.Item 子元素 | () => React.ReactNode                          | -      | 0.0.5 |
 | customRender   | 自定义渲染函数        | `({ text, record, index }, form) => ReactNode` | -      | 0.0.1 |
-| otherProps     | 继承 antd 的 columns  | `-`                                            | -      | 0.0.1 |
+
+除了以上属性外，该组件还支持 Ant Design Table 组件的 columns 所有属性。
 
 ### ComponentType
 
@@ -88,6 +90,7 @@ EditFormTreeTable 是一个基于 Form 和 Table 的高级组件，用于展示�
 | switch      | 开关           | `SwitchProps`      | `-`    | 0.0.1 |
 | timePicker  | 时间选择器     | `TimePickerProps`  | `-`    | 0.0.1 |
 | treeSelect  | 树选择器       | `TreeSelectProps`  | `-`    | 0.0.1 |
+| cascader    | 级联选择       | `CascaderProps`    | `-`    | 0.0.5 |
 
 ### useEditFormTreeTable 自定义 hooks
 

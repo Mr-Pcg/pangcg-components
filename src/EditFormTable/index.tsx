@@ -15,7 +15,7 @@ import {
   TreeSelect,
 } from 'antd';
 import { generateUUID } from 'pangcg-components';
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 
 const { RangePicker } = DatePicker;
 
@@ -98,9 +98,9 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
    * 设置：表格 列
    * 根据不同 componentType 渲染不同的组件
    */
-  const customColumns = () => {
+  const customColumns = useCallback(() => {
     // 获取可编辑表格的数据
-    const formListValues = form.getFieldValue(formListProps.name) || [];
+    // const formListValues = form.getFieldValue(formListProps.name) || [];
 
     return columns.map((columnItem) => {
       const {
@@ -113,27 +113,30 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
 
       return {
         ...columnItem,
-        render: (text: any, record: any, inx: number) => {
-          // 获取当前数据
-          const curRecord = formListValues?.[inx] || {};
+        render: (text: any, record: any, index: number) => {
+          // const curRecord = formListValues?.[index] || {}; // 获取当前数据
+
+          // 去除 fieldKey isListField 两个字段
+          if ('fieldKey' in record) {
+            delete record.fieldKey;
+          }
+          if ('isListField' in record) {
+            delete record.isListField;
+          }
 
           // 自定义渲染：customRender
           if (columnItem?.customRender instanceof Function) {
             return columnItem.customRender(
               {
-                text: curRecord?.[dataIndex] || undefined,
-                record: curRecord,
-                index: inx,
+                text,
+                record,
+                index,
               },
               form,
             );
           } else if (columnItem?.render instanceof Function) {
             // 渲染render
-            return columnItem.render(
-              curRecord?.[dataIndex] || '',
-              curRecord,
-              inx,
-            );
+            return columnItem.render(text, record, index);
           } else {
             // 根据 componentType 渲染
 
@@ -159,7 +162,7 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
                 <Form.Item
                   {...formItemProps}
                   valuePropName={valuePropName}
-                  name={[inx, dataIndex]}
+                  name={[index, dataIndex]}
                   style={{ marginBottom: 0 }}
                 >
                   {renderFormItem && renderFormItem instanceof Function
@@ -172,13 +175,29 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
               );
             } else if (componentType === 'text') {
               // 渲染：文本
-              return curRecord?.[dataIndex]?.toString() || '';
+              return text;
             }
           }
         },
       };
     });
-  };
+  }, [formListProps.name, columns, form]);
+
+  // 设置：可编辑表格每行数据
+  const transformData = useCallback(
+    (data: any[]): any[] => {
+      return data?.map((field, index) => {
+        // 获取当前数据
+        const currentData = form.getFieldValue([formListProps.name, index]);
+        return {
+          ...currentData, // 当前行数据
+          fieldKey: index, // 用于标识表单列表中每个项的唯一键
+          isListField: true, // 用于标识该字段是否属于Form.List
+        };
+      });
+    },
+    [form, formListProps.name],
+  );
 
   return (
     <Form.List {...(formListProps || {})}>
@@ -188,14 +207,18 @@ const EditFormTable: FC<EditFormTableProps> = (props) => {
             <Table
               {...(rest || {})}
               columns={customColumns()}
-              // 使用rowKey作为行唯一标识
+              // dataSource={fields} // 数据源
+              dataSource={transformData(fields)}
+              // 使用rowKey绑定的字段作为行唯一标识
               rowKey={(record) => {
-                const formListValues =
-                  form.getFieldValue(formListProps.name) || [];
-                const index = record.name;
-                return formListValues?.[index]?.[rowKey];
+                return record?.[rowKey];
               }}
-              dataSource={fields} // 数据源
+              // rowKey={(record) => {
+              //   const formListValues =
+              //     form.getFieldValue(formListProps.name) || [];
+              //   const index = record.name;
+              //   return formListValues?.[index]?.[rowKey];
+              // }}
               pagination={false} // 可编辑表格，不允许分页
             />
             {/* 添加一行 */}

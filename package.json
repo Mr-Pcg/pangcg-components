@@ -1,6 +1,6 @@
 {
   "name": "pangcg-components",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "基于 React antd5.x 的现代化的前端组件库和工具函数库",
   "license": "MIT",
   "module": "dist/index.js",
@@ -51,8 +51,8 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
-    "@dnd-kit/utilities": "^6.0.0",
-    "@types/react-beautiful-dnd": "^13.1.8",
+    "@dnd-kit/utilities": "^3.2.2",
+    "antd": "^5.24.2",
     "dayjs": "^1.11.13",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
@@ -86,7 +86,6 @@
     "stylelint": "^14.9.1"
   },
   "peerDependencies": {
-    "antd": "^5.24.2",
     "react": ">=16.9.0",
     "react-dom": ">=16.9.0"
   },

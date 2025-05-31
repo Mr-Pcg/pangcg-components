@@ -1,11 +1,17 @@
+# [0.0.6] - 2025-05-29
+
+更新日志：
+
+- update [EditFormTable] 修改了内部实现原理， 还将 useEditFormTable 的方法 updateFormList 重新命令 updateRecordWithSource, 删除不需要的依赖
+
 # [0.0.5] - 2025-05-27
 
 更新日志：
 
 - add [DragSortSingleTable] 新增 单层表格拖拽排序组件
 - add [DragSortTreeTable] 新增 树形表格拖拽排序组件
-- update [EditFormTable] 新增对 Cascader 组件的支持和新增 renderFormItem 对自定义子 Form.Item 子组件的支持
-- update [EditFormTreeTable] 新增对 Cascader 组件的支持和新增 renderFormItem 对自定义子 Form.Item 子组件的支持
+- update [EditFormTable] 新增对 Cascader 组件的支持和新增 renderFormItem 对自定义 Form.Item 子组件的支持
+- update [EditFormTreeTable] 新增对 Cascader 组件的支持和新增 renderFormItem 对自定义 Form.Item 子组件的支持
 
 # [0.0.4] - 2025-05-22
 

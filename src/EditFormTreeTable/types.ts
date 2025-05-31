@@ -3,6 +3,7 @@ import type {
   CascaderProps,
   CheckboxProps,
   DatePickerProps,
+  FormInstance,
   FormItemProps,
   InputNumberProps,
   InputProps,
@@ -148,7 +149,7 @@ export type EditTreeColumnsType<T = any> = Array<
     /** 自定义渲染函数 */
     customRender?: (
       { text, record, index }: { text: string; record: any; index: number },
-      form?: any,
+      form?: FormInstance,
     ) => React.ReactNode;
   }
 >;

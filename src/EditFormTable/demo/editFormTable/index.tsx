@@ -31,7 +31,7 @@ const EditFormTableDemo = () => {
     // addRecord,
     deleteRecord,
     updateRecord,
-    updateFormList,
+    updateRecordWithSource,
     updateRecordField,
   } = useEditFormTable(form);
 
@@ -64,6 +64,7 @@ const EditFormTableDemo = () => {
       gender: 'male',
       age: '18',
       health: 1,
+      isMarried: false,
       bothday: dayjs(),
     };
   };
@@ -221,12 +222,27 @@ const EditFormTableDemo = () => {
             <a
               onClick={() => {
                 console.log('updateRecord', updateRecord);
-                updateFormList('list', index, {
+
+                // 只对 Form.Item 绑定的字段生效
+                // updateRecord('list', index, {
+                //   ...record,
+                //   name: '张三',
+                //   age: 9999,
+                //   gender: 'male',
+                //   bothday: dayjs(),
+                //   isMarried: true,
+                //   health: 2,
+                // });
+
+                // 对所有修改的字段生效
+                updateRecordWithSource('list', index, {
                   ...record,
                   name: '张三',
                   age: 9999,
                   gender: 'male',
                   bothday: dayjs(),
+                  isMarried: true,
+                  health: 2,
                 });
               }}
             >

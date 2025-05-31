@@ -41,7 +41,7 @@ const useEditFormTable = (formInstance: FormInstance) => {
   };
 
   /**
-   * 修改：当前行所有数据
+   * 修改：当前行所有数据 （只能修改表单字段）
    * @param formListName 表单列表名称
    * @param updateIndex 更新数据下标
    * @param record 更新数据
@@ -55,7 +55,7 @@ const useEditFormTable = (formInstance: FormInstance) => {
   };
 
   /**
-   * 修改：当前行特定字段数据
+   * 修改：当前行特定字段数据（只能修改表单字段）
    * @param formListName 表单列表名称
    * @param updateIndex 更新行下标
    * @param field 更新的字段
@@ -71,12 +71,12 @@ const useEditFormTable = (formInstance: FormInstance) => {
   };
 
   /**
-   * 修改：通过修改整个数据源来修改对应下表数据 （目的是解决表格不是表单的字段）
+   * 修改：通过修改整个数据源来修改对应下标数据 （目的是解决表格不是表单的字段）
    * @param formListName 表单列表名称
    * @param updateIndex 更新行下标
    * @param record 更新数据
    */
-  const updateFormList = (
+  const updateRecordWithSource = (
     formListName: string,
     updateIndex: number,
     record: any,
@@ -93,7 +93,7 @@ const useEditFormTable = (formInstance: FormInstance) => {
     deleteRecord,
     updateRecord,
     updateRecordField,
-    updateFormList,
+    updateRecordWithSource,
   };
 };
 

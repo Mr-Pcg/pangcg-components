@@ -21,7 +21,7 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 
 1. 暂时不支持树形数据结构的表格编辑
 2. EditFormTable 组件的内部【新增一行】的 recordCreatorProps 的 render 返回的数据中需要存在和 rowKey 绑定的字段值，全局唯一
-3. 使用 useEditFormTable 的 addRecord 方法【添加一行】，第二个参数需要存在和 rowKey 绑定的字段值，全局唯一
+3. 使用 useEditFormTable 的 addRecord 方法【添加一行】，第二个对象参数需要存在和 rowKey 绑定的字段值，全局唯一
 
 ## 代码演示
 
@@ -36,7 +36,8 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 | formListProps      | 参考 Antd 的 formListProps（必填） | `-`                                            | `-`    | 0.0.1 |
 | recordCreatorProps | 创建一行参数(非必填)               | [RecordCreatorProps](#recordcreatorprops-参数) | `-`    | 0.0.1 |
 | columns            | 表格列的配置描述                   | [CustomColumns](#customcolumns-参数)           | `_`    | 0.0.1 |
-| otherProps         | 其余参数继承 antd 的 Table         | `-`                                            | `_`    | 0.0.1 |
+
+除了以上属性外，该组件还支持 Ant Design Table 组件的所有属性。
 
 ## RecordCreatorProps 参数
 
@@ -56,7 +57,8 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 | formItemProps  | 继承 Antd 的 formItemProps                     | `-`                                            | `-`       | 0.0.1 |
 | customRender   | 自定义渲染函数                                 | `({ text, record, index }, form) => ReactNode` | `-`       | 0.0.1 |
 | renderFormItem | 渲染 Form.Item 子元素                          | () => React.ReactNode                          | undefined | 0.0.5 |
-| otherProps     | 继承 antd 的 columns                           | `-`                                            | -         | 0.0.1 |
+
+除了以上属性外，该组件还支持 Ant Design Table 组件的 columns 所有属性。
 
 ## ComponentType 参数
 
@@ -80,10 +82,10 @@ EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示
 useEditFormTable: 提供了操作表格数据的工具方法，用于在表格外部进行数据操作。
 useEditFormTable: 接受两个参数 form（表单的 form） 和 rowKey （绑定到 EditFormTable 组件的 rowKey， 一定保持一致）
 
-| 参数名            | 说明                           | 类型                                                                                  | 版本  |
-| ----------------- | ------------------------------ | ------------------------------------------------------------------------------------- | ----- |
-| addRecord         | 添加一行数据                   | `(formListName: string, record?: object) => void`                                     | 0.0.4 |
-| deleteRecord      | 删除指定行数据                 | `(formListName: string, deleteIndex: number) => void`                                 | 0.0.4 |
-| updateRecord      | 更新整行数据                   | `(formListName: string, updateIndex: number, record: any) => void`                    | 0.0.4 |
-| updateRecordField | 更新指定行的特定字段           | `(formListName: string, updateIndex: number, field: string, fieldValue: any) => void` | 0.0.4 |
-| updateFormList    | 通过修改整个数据源来更新指定行 | `(formListName: string, updateIndex: number, record: any) => void`                    | 0.0.4 |
+| 参数名                 | 说明                                                      | 类型                                                                                  | 版本  |
+| ---------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----- |
+| addRecord              | 添加一行数据                                              | `(formListName: string, record?: object) => void`                                     | 0.0.4 |
+| deleteRecord           | 删除指定行数据                                            | `(formListName: string, deleteIndex: number) => void`                                 | 0.0.4 |
+| updateRecord           | 更新整行数据（只对 Form.Item 绑定的表单元素生效）         | `(formListName: string, updateIndex: number, record: any) => void`                    | 0.0.4 |
+| updateRecordField      | 更新指定行的特定字段（只对 Form.Item 绑定的表单元素生效） | `(formListName: string, updateIndex: number, field: string, fieldValue: any) => void` | 0.0.4 |
+| updateRecordWithSource | 通过修改整个数据源来更新指定行数据                        | `(formListName: string, updateIndex: number, record: any) => void`                    | 0.0.6 |
