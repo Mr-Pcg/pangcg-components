@@ -11,7 +11,7 @@ mobile: false
 
 # EditFormTable 可编辑表格
 
-EditFormTable 是一个基于 Form.List 和 Table 的高级组件，用于展示和编辑表格数据。它允许用户直接在表格中编辑数据，支持多种表单控件类型。
+EditFormTable 是一个基于 Form 和 Table 的高级组件，用于展示和编辑表格数据。它允许用户直接在表格中编辑数据，支持多种表单控件类型。
 
 ## 何时使用
 
