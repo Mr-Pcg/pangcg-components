@@ -9,8 +9,8 @@ export default () => {
 
   // 将在线PDF转换为Base64
   useEffect(() => {
-    const fileUrl =
-      'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
+    const fileUrl = 'http://106.54.204.153/pangcg-components/file/online.pdf';
+    // 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
 
     setLoading(true);
 
