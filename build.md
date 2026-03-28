@@ -20,7 +20,7 @@
 5. 发布包  
    命令：npm publish
 
-## 文档发布流程
+## 文档发布流程 --- 发布到 github
 
 1. 检查：package.json 文件
    "dev": "dumi dev",
@@ -39,6 +39,11 @@
    首先通过 predeploy 脚本运行 npm run docs:build 构建文档。然后执行 gh-pages -d docs-dist 将构建好的文档部署到 GitHub Pages
    部署成功后，您的文档将会发布到:https://<您的 GitHub 用户名>.github.io/pangcg-components/
    注意:
+
    1. 您的配置文件.dumirc.ts 已经正确设置了 base 和 publicPath 为/pangcg-components/
    2. 首次部署后，请检查 GitHub 仓库的设置，确保 GitHub Pages 的分支设置为 gh-pages 分支
    3. 如需更新文档，只需再次运行 npm run deploy 即可。
+
+## 文档发布流程 --- 发布自己的服务器
+
+直接运行 npm run docs:build 生成 docs-dist 打包文件， 放到服务器对应的位置

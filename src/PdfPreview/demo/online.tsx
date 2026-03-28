@@ -6,8 +6,8 @@ export default () => {
   const [visible, setVisible] = useState(false);
 
   // 示例PDF文件URL - 在线链接
-  const fileUrl =
-    'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
+  const fileUrl = 'http://106.54.204.153/pangcg-components/file/online.pdf';
+  // 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
 
   return (
     <div>

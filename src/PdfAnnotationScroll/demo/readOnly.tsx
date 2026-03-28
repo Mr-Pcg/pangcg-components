@@ -119,7 +119,7 @@ const MyPdfViewer: React.FC = () => {
       <PdfAnnotationScroll
         readOnly={true}
         fileName="示例文档.pdf"
-        fileUrl="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
+        fileUrl="http://106.54.204.153/pangcg-components/file/online.pdf" // "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
         annotationList={predefinedAnnotations}
         onSave={(annotations: Annotation[], saveFile: Blob | undefined) => {
           console.log('保存的批注:', annotations);

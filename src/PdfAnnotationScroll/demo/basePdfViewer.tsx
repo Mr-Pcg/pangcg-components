@@ -2,8 +2,8 @@ import { Annotation, PdfAnnotationScroll } from 'pangcg-components';
 import React from 'react';
 
 // 示例PDF文件URL
-const pdfUrl =
-  'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
+const pdfUrl = 'http://106.54.204.153/pangcg-components/file/online.pdf';
+// 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
 
 const DemoPage = () => {
   // 处理批注保存
