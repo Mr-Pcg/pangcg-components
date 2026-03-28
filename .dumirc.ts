@@ -6,7 +6,7 @@ export default defineConfig({
   publicPath:
     process.env.NODE_ENV === 'production' ? '/pangcg-components/' : '/',
   themeConfig: {
-    name: '组建库',
+    name: '业务组件库',
     nav: [
       {
         title: '指南',
